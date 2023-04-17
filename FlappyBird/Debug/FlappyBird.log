@@ -1,6 +1,22 @@
 ﻿  Matrix.cpp
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(25,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(33,19): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(24,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(33,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(41,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(50,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(65,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(66,21): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(81,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(82,21): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(90,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(91,21): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(99,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(100,21): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(107,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(129,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(131,21): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(139,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(152,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(160,20): warning C4018: '<': signed/unsigned mismatch
   NN.cpp
   Generating Code...
   FlappyBird.vcxproj -> D:\GitHub\AI Course\FlappyBird_NN\Debug\FlappyBird.exe

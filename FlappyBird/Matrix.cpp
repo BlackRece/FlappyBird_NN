@@ -93,6 +93,37 @@ Matrix Matrix::map(const std::function<double(int, int, double)>& func)
 	return m;
 }
 
+Matrix Matrix::map(std::function<double(double)>& func)
+{
+	Matrix m(m_iRows, m_iCols);
+	for (int i = 0; i < m_iRows; i++)
+		for (int j = 0; j < m_iCols; j++)
+			m(i, j) = func((*this)(i, j));
+	return m;
+}
+
+void Matrix::sigmoid()
+{
+	for (int i = 0; i < m_iRows * m_iCols; i++)
+		m_dData[i] = 1 / (1 + exp(-m_dData[i]));
+}
+
+Matrix Matrix::fromArray(const double dArray[], bool bIsCol)
+{
+	int iSize = (bIsCol) ? 1 : sizeof(dArray) / sizeof(double);
+	Matrix m((bIsCol) ? 1 : sizeof(dArray) / sizeof(double), (bIsCol) ? sizeof(dArray) / sizeof(double) : 1);
+	
+	for (int i = 0; i < iSize; i++)
+	{
+		if (bIsCol)
+			m(0, i) = dArray[i];
+		else
+			m(i, 0) = dArray[i];
+	}
+
+	return m;
+}
+
 void Matrix::print() const
 {
 	for (int i = 0; i < m_iRows; i++)
@@ -103,10 +134,10 @@ void Matrix::print() const
 	}
 }
 
-void Matrix::random()
+void Matrix::random(int dVal)
 {
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m_dData[i] = rand() % 10;
+		m_dData[i] = rand() % dVal;
 }
 
 inline void Matrix::checkBounds(unsigned iRows, unsigned iCols) const
