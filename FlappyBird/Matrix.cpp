@@ -84,6 +84,15 @@ Matrix Matrix::transpose() const
 	return m;
 }
 
+Matrix Matrix::map(const std::function<double(int, int, double)>& func)
+{
+	Matrix m(m_iRows, m_iCols);
+	for (int i = 0; i < m_iRows; i++)
+		for (int j = 0; j < m_iCols; j++)
+			m(i,j) = func(i, j, (*this)(i,j));
+	return m;
+}
+
 void Matrix::print() const
 {
 	for (int i = 0; i < m_iRows; i++)

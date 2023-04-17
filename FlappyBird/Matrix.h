@@ -5,6 +5,7 @@
 #include <valarray>
 #include <stdexcept>
 #include <iostream>
+#include <functional>
 
 class Matrix
 {
@@ -29,6 +30,11 @@ public:
 	Matrix mul(const Matrix& mSource);
 	Matrix dot(const Matrix& mSource);
 	Matrix transpose() const;
+
+	/// <summary>
+	/// take the value at each index and apply the function to it, reutrn a new matrix
+	/// </summary>
+	Matrix map(const std::function<double(int, int, double)>& func);
 
 	void print() const;
 	void random();
