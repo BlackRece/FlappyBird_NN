@@ -10,7 +10,7 @@
 class Matrix
 {
 public:
-	Matrix():m_iRows(1), m_iCols(1), m_dData(std::valarray<double>(1)) { ; }
+	Matrix() :m_iRows(1), m_iCols(1), m_dData(std::valarray<double>(1)) { ; }
 	inline Matrix(unsigned iRows, unsigned iCols);
 	~Matrix() { ; }
 
@@ -40,11 +40,11 @@ public:
 	/// </summary>
 	Matrix map(const std::function<double(int, int, double)>& func);
 	Matrix map(std::function<double(double)>& func);
-
-	void sigmoid();
+	Matrix map(std::function<double()>& func);
 
 	// helper functions
-	Matrix fromArray(const double dArray[], bool bIsCol = false);
+	Matrix fromArray(const double dArray[], const int iArraySize, bool bIsCol = false);
+	double* toArray() const;
 
 	// debug functions
 	void print() const;

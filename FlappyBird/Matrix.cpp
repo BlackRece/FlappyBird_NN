@@ -89,7 +89,7 @@ Matrix Matrix::map(const std::function<double(int, int, double)>& func)
 	Matrix m(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows; i++)
 		for (int j = 0; j < m_iCols; j++)
-			m(i,j) = func(i, j, (*this)(i,j));
+			m(i, j) = func(i, j, (*this)(i, j));
 	return m;
 }
 
@@ -102,18 +102,23 @@ Matrix Matrix::map(std::function<double(double)>& func)
 	return m;
 }
 
-void Matrix::sigmoid()
-{
-	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m_dData[i] = 1 / (1 + exp(-m_dData[i]));
+Matrix Matrix::map(std::function<double()>& func) {
+	Matrix m(m_iRows, m_iCols);
+	for (int i = 0; i < m_iRows; i++) {
+		for (int j = 0; j < m_iCols; j++) {
+			m(i, j) = func();
+		}
+	}
+	return m;
 }
 
-Matrix Matrix::fromArray(const double dArray[], bool bIsCol)
+Matrix Matrix::fromArray(const double dArray[], const int iArraySize, bool bIsCol)
 {
-	int iSize = (bIsCol) ? 1 : sizeof(dArray) / sizeof(double);
-	Matrix m((bIsCol) ? 1 : sizeof(dArray) / sizeof(double), (bIsCol) ? sizeof(dArray) / sizeof(double) : 1);
-	
-	for (int i = 0; i < iSize; i++)
+	Matrix m = bIsCol
+		? Matrix(1, iArraySize)
+		: Matrix(iArraySize, 1);
+
+	for (int i = 0; i < iArraySize; i++)
 	{
 		if (bIsCol)
 			m(0, i) = dArray[i];
@@ -122,6 +127,14 @@ Matrix Matrix::fromArray(const double dArray[], bool bIsCol)
 	}
 
 	return m;
+}
+
+double* Matrix::toArray() const
+{
+	double* dArray = new double[m_iRows * m_iCols];
+	for (int i = 0; i < m_iRows * m_iCols; i++)
+		dArray[i] = m_dData[i];
+	return dArray;
 }
 
 void Matrix::print() const

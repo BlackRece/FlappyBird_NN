@@ -18,10 +18,13 @@ public:
 	NN(int iInputCount, int iHiddenCount, int iOutputCount);
 	~NN() { ; }
 
-	void feedForward(const double dInputs[]);
+	double* feedForward(const double dInputs[], const int iInputCount);
 
 	// activation functions
 	double sigmoid(double dVal) { return 1 / (1 + exp(-dVal)); }
+
+	// helper functions
+	double random(double dMin = -1, double dMax = 1) { return dMin + (dMax - dMin) * ((double)rand() / RAND_MAX); }
 
 private:
 	int m_iInputCount;
