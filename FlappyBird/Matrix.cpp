@@ -196,12 +196,12 @@ void Matrix::random(int dVal)
 		m_dData[i] = rand() % dVal;
 }
 
-inline void Matrix::showRow(unsigned iRow) const
+void Matrix::showRow(unsigned iRow) const
 {
 	auto r = getRow(iRow); for (double v : r) std::cout << v << " ";
 }
 
-inline void Matrix::showCol(unsigned iCol) const
+void Matrix::showCol(unsigned iCol) const
 {
 	auto c = getCol(iCol); for (double v : c) std::cout << v << " ";
 }

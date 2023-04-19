@@ -59,8 +59,8 @@ public:
 	// debug functions
 	void print() const;
 	void random(int dVal = 10);
-	inline void showRow(unsigned iRow) const;
-	inline void showCol(unsigned iCol) const;
+	void showRow(unsigned iRow) const;
+	void showCol(unsigned iCol) const;
 
 private:
 	unsigned m_iRows;
