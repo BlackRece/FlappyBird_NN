@@ -23,13 +23,23 @@ public:
 	// math functions
 	inline Matrix operator+(const double& dScalar) { return add(dScalar); }
 	inline Matrix operator+(const Matrix& mMatrix) { return add(mMatrix); }
+	inline Matrix operator-(const double& dScalar) { return sub(dScalar); }
+	inline Matrix operator-(const Matrix& mMatrix) { return sub(mMatrix); }
 	inline Matrix operator*(const double& dScalar) { return mul(dScalar); }
 	inline Matrix operator*(const Matrix& mMatrix) { return mul(mMatrix); }
+	inline Matrix operator/(const double& dScalar) { return div(dScalar); }
+	inline Matrix operator/(const Matrix& mMatrix) { return div(mMatrix); }
 
 	Matrix add(const double dScalar);
-	Matrix add(const Matrix& mSource);
+	Matrix sub(const double dScalar);
 	Matrix mul(const double dScalar);
+	Matrix div(const double dScalar);
+
+	Matrix add(const Matrix& mSource);
+	Matrix sub(const Matrix& mSource);
 	Matrix mul(const Matrix& mSource);
+	Matrix div(const Matrix& mSource);
+
 	Matrix dot(const Matrix& mSource);
 
 	// manipulation functions
@@ -43,18 +53,14 @@ public:
 	Matrix map(std::function<double()>& func);
 
 	// helper functions
-	Matrix fromArray(const double dArray[], const int iArraySize, bool bIsCol = false);
+	Matrix fromArray(const double dArray[], const int iArraySize, bool bIsCol = true);
 	double* toArray() const;
 
 	// debug functions
 	void print() const;
 	void random(int dVal = 10);
-	inline void showRow(unsigned iRow) const {
-		auto r = getRow(iRow); for (double v : r) std::cout << v << " ";
-	}
-	inline void showCol(unsigned iCol) const {
-		auto c = getCol(iCol); for (double v : c) std::cout << v << " ";
-	}
+	inline void showRow(unsigned iRow) const;
+	inline void showCol(unsigned iCol) const;
 
 private:
 	unsigned m_iRows;

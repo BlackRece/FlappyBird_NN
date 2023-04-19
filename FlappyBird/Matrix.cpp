@@ -26,12 +26,11 @@ Matrix Matrix::add(const double dScalar)
 	return m;
 }
 
-Matrix Matrix::add(const Matrix& mSource)
+Matrix Matrix::sub(const double dScalar)
 {
-	checkSize(mSource.m_iRows, mSource.m_iCols);
 	Matrix m(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] + mSource.m_dData[i];
+		m.m_dData[i] = m_dData[i] - dScalar;
 	return m;
 }
 
@@ -43,8 +42,39 @@ Matrix Matrix::mul(const double dScalar)
 	return m;
 }
 
+Matrix Matrix::div(const double dScalar)
+{
+	Matrix m(m_iRows, m_iCols);
+	for (int i = 0; i < m_iRows * m_iCols; i++)
+		m.m_dData[i] = m_dData[i] / dScalar;
+	return m;
+}
+
+Matrix Matrix::add(const Matrix& mSource)
+{
+	checkSize(m_iRows, mSource.m_iRows);
+	checkSize(m_iCols, mSource.m_iCols);
+	Matrix m(m_iRows, m_iCols);
+	for (int i = 0; i < m_iRows * m_iCols; i++)
+		m.m_dData[i] = m_dData[i] + mSource.m_dData[i];
+	return m;
+}
+
+Matrix Matrix::sub(const Matrix& mSource)
+{
+	checkSize(m_iRows, mSource.m_iRows);
+	checkSize(m_iCols, mSource.m_iCols);
+	Matrix m(m_iRows, m_iCols);
+	for (int i = 0; i < m_iRows * m_iCols; i++)
+		m.m_dData[i] = m_dData[i] - mSource.m_dData[i];
+	return m;
+}
+
+
 Matrix Matrix::mul(const Matrix& mSource)
 {
+	checkSize(m_iRows, mSource.m_iRows);
+	checkSize(m_iCols, mSource.m_iCols);
 	// element-wise multiplication
 	Matrix m(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
@@ -52,10 +82,21 @@ Matrix Matrix::mul(const Matrix& mSource)
 	return m;
 }
 
+Matrix Matrix::div(const Matrix& mSource)
+{
+	checkSize(m_iRows, mSource.m_iRows);
+	checkSize(m_iCols, mSource.m_iCols);
+	// element-wise division
+	Matrix m(m_iRows, m_iCols);
+	for (int i = 0; i < m_iRows * m_iCols; i++)
+		m.m_dData[i] = m_dData[i] / mSource.m_dData[i];
+	return m;
+}
+
 Matrix Matrix::dot(const Matrix& mSource)
 {
 	// matrix multiplication
-	if (m_iRows != mSource.m_iCols)
+	if (m_iCols != mSource.m_iRows)
 	{
 		throw std::invalid_argument("Matrix sizes do not match");
 		Matrix errorMatrix(1, 1);
@@ -114,16 +155,18 @@ Matrix Matrix::map(std::function<double()>& func) {
 
 Matrix Matrix::fromArray(const double dArray[], const int iArraySize, bool bIsCol)
 {
+	// NOTE: bIsCol is true if the array is a column vector
+	// NOTE: Matrix(ROW, COL)
 	Matrix m = bIsCol
-		? Matrix(1, iArraySize)
-		: Matrix(iArraySize, 1);
+		? Matrix(iArraySize, 1)
+		: Matrix(1, iArraySize);
 
 	for (int i = 0; i < iArraySize; i++)
 	{
 		if (bIsCol)
-			m(0, i) = dArray[i];
-		else
 			m(i, 0) = dArray[i];
+		else
+			m(0, i) = dArray[i];
 	}
 
 	return m;
@@ -151,6 +194,16 @@ void Matrix::random(int dVal)
 {
 	for (int i = 0; i < m_iRows * m_iCols; i++)
 		m_dData[i] = rand() % dVal;
+}
+
+inline void Matrix::showRow(unsigned iRow) const
+{
+	auto r = getRow(iRow); for (double v : r) std::cout << v << " ";
+}
+
+inline void Matrix::showCol(unsigned iCol) const
+{
+	auto c = getCol(iCol); for (double v : c) std::cout << v << " ";
 }
 
 inline void Matrix::checkBounds(unsigned iRows, unsigned iCols) const

@@ -4,7 +4,7 @@ NN::NN(int iInputCount, int iHiddenCount, int iOutputCount)
 	: m_iInputCount(iInputCount), m_iHiddenCount(iHiddenCount), m_iOutputCount(iOutputCount)
 {
 	// prepare function to random every element in matrix
-	std::function<double()> fnRandomDouble = std::bind(&NN::random, this, -2.0, 2.0);
+	std::function<double()> fnRandomDouble = std::bind(&NN::random, this, -1.0, 1.0);
 
 	// create matrices
 	m_mInput = Matrix(m_iInputCount, 1);
@@ -13,6 +13,7 @@ NN::NN(int iInputCount, int iHiddenCount, int iOutputCount)
 
 	m_mWeightsIH = Matrix(m_iHiddenCount, m_iInputCount);
 	m_mWeightsHO = Matrix(m_iOutputCount, m_iHiddenCount);
+
 	m_mBiasH = Matrix(m_iHiddenCount, 1);
 	m_mBiasO = Matrix(m_iOutputCount, 1);
 
@@ -27,21 +28,77 @@ NN::NN(int iInputCount, int iHiddenCount, int iOutputCount)
 double* NN::feedForward(const double dInputs[], const int iInputCount)
 {
 	// convert input array to matrix
-	m_mInput = m_mInput.fromArray(dInputs, iInputCount);
+	bool bIsColumnVector = true;
+	m_mInput = m_mInput.fromArray(dInputs, iInputCount, bIsColumnVector);
 
 	// apply weights and biases to input
 	m_mHidden = m_mWeightsIH.dot(m_mInput);
-	auto hiddenWithWeightsAndBias = m_mHidden.add(m_mBiasH);
+	m_mHidden = m_mHidden.add(m_mBiasH);
 
 	// prepare and apply activation function
 	std::function<double(double)> fnSigmoid = std::bind(&NN::sigmoid, this, std::placeholders::_1);
-	auto hiddenLayerResult = hiddenWithWeightsAndBias.map(fnSigmoid);
+	m_mHidden = m_mHidden.map(fnSigmoid);
 
 	// apply weights and biases to hidden layer
-	m_mOutput = m_mWeightsHO.dot(hiddenLayerResult);
-	auto outputLayerWithWeightsAndBias = m_mOutput.add(m_mBiasO);
-	
+	m_mOutput = m_mWeightsHO.dot(m_mHidden);
+	m_mOutput = m_mOutput.add(m_mBiasO);
+
 	// apply activation function
-	auto result = outputLayerWithWeightsAndBias.map(fnSigmoid);
-	return result.toArray();
+	m_mOutput = m_mOutput.map(fnSigmoid);
+
+	// return result as array
+	return m_mOutput.toArray();
+}
+
+void NN::trainFeedForward(const double dInputs[], const int iInputCount, const double dTargets[], const int iTargetCount)
+{
+	double* rawOutputs = feedForward(dInputs, iInputCount);
+
+	Matrix mOutputs, mTargets;
+	// get output matrix from feed forward
+	mOutputs = mOutputs.fromArray(rawOutputs, m_iOutputCount);
+
+	// convert target array to matrix
+	mTargets = mTargets.fromArray(dTargets, iTargetCount);
+
+	// calculate output errors
+	Matrix mOutputErrors = mTargets.sub(mOutputs);
+
+	// calculate hidden-output gradients via gradient descent
+	std::function<double(double)> fnSigmoidDerivative = std::bind(&NN::sigmoidDerivative, this, std::placeholders::_1);
+	Matrix mOutputGradients = mOutputs.map(fnSigmoidDerivative);
+	mOutputGradients = mOutputGradients.mul(mOutputErrors);
+
+	double dLearningRate = 1.0;		// TODO: make this a member variable that starts at 0.1 and decreases over time
+	mOutputGradients = mOutputGradients.mul(dLearningRate);
+
+	// calculate hidden-output deltas
+	Matrix mHidden_T = m_mHidden.transpose();
+	Matrix mWeightsHO_deltas = mOutputGradients.dot(mHidden_T);
+
+	// adjust hidden-output weights and biases
+	m_mWeightsHO = m_mWeightsHO.add(mWeightsHO_deltas);
+
+	// apply hidden->output biases
+	m_mBiasO = m_mBiasO.add(mOutputGradients);
+
+	// calculate hidden->output deltas/errors
+	Matrix mWeightsHO_T = m_mWeightsHO.transpose();
+	Matrix mHiddenErrors = mWeightsHO_T.dot(mOutputErrors);
+
+	// calculate input->hidden gradients via gradient descent
+	Matrix mHiddenGradients = m_mHidden.map(fnSigmoidDerivative);
+	mHiddenGradients = mHiddenGradients.mul(mHiddenErrors);
+	mHiddenGradients = mHiddenGradients.mul(dLearningRate);
+
+	// calculate input->hidden deltas
+	Matrix mInput_T = m_mInput.transpose();
+	Matrix mWeightsIH_deltas = mHiddenGradients.dot(mInput_T);
+
+	// adjust input->hidden weights and biases
+	m_mWeightsIH = m_mWeightsIH.add(mWeightsIH_deltas);
+
+	// apply input->hidden biases
+	m_mBiasH = m_mBiasH.add(mHiddenGradients);
+
 }

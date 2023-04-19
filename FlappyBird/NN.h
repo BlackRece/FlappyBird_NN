@@ -4,6 +4,9 @@
 
 #include "Matrix.h"
 
+#define LEARNING_RATE 0.1
+#define HIDDEN_LAYER_SIZE 1 // TODO: refactor to handle more than 1 layer
+
 //Vector variants are avalable
 /*
   remember: row major - rows first, columns second (row x column)
@@ -19,23 +22,30 @@ public:
 	~NN() { ; }
 
 	double* feedForward(const double dInputs[], const int iInputCount);
+	void trainFeedForward(const double dInputs[], const int iInputCount, const double dTargets[], const int iTargetCount);
 
 	// activation functions
 	double sigmoid(double dVal) { return 1 / (1 + exp(-dVal)); }
+	double sigmoidDerivative(double dVal) { return dVal * (1 - dVal); }
+	double sigmoidDerivativeFull(double dVal) { return sigmoid(dVal) * (1 - sigmoid(dVal)); }
 
 	// helper functions
 	double random(double dMin = -1, double dMax = 1) { return dMin + (dMax - dMin) * ((double)rand() / RAND_MAX); }
+	double randomDouble() { return -2 + (2 - -2) * ((double)rand() / RAND_MAX); }
 
 private:
 	int m_iInputCount;
 	int m_iHiddenCount;
 	int m_iOutputCount;
 
+public:
 	Matrix m_mInput;
 	Matrix m_mHidden;
 	Matrix m_mOutput;
+
 	Matrix m_mWeightsIH;
 	Matrix m_mWeightsHO;
+
 	Matrix m_mBiasH;
 	Matrix m_mBiasO;
 };
