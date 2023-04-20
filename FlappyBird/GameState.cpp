@@ -77,16 +77,16 @@ namespace Sonar
 
 				m_pAIController->handleInput();
 
-				if (m_pAIController->shouldFlap())
-				{
-					//std::cout << "tap!" << std::endl;
-					bird->Tap();
-					_wingSound.play();
-				}
-				else 
-				{
-					//std::cout << "not tap :(" << std::endl;
-				}
+				//if (m_pAIController->shouldFlap())
+				//{
+				//	//std::cout << "tap!" << std::endl;
+				//	bird->Tap();
+				//	_wingSound.play();
+				//}
+				//else 
+				//{
+				//	//std::cout << "not tap :(" << std::endl;
+				//}
 			}
 		}
 
@@ -135,37 +135,41 @@ namespace Sonar
 				clock.restart();
 			}
 
-			bird->Update(dt);
-			//m_pAIController->update(dt);
+			//bird->Update(dt);
+			m_pAIController->update(dt);
+
+			//std::vector<Bird*> vecBirds = m_pAIController->getBirds();
+			std::vector<DnaGene*> vecBirdBrains = m_pAIController->getDnaGenes();
 
 			std::vector<sf::Sprite> landSprites = land->GetSprites();
+			std::vector<sf::Sprite> pipeSprites = pipe->GetSprites();
 
-			for (unsigned int i = 0; i < landSprites.size(); i++)
+			for (DnaGene* gene : vecBirdBrains)
 			{
-				if (collision.CheckSpriteCollision(bird->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
+				for (unsigned int i = 0; i < landSprites.size(); i++)
 				{
-					_gameState = GameStates::eGameOver;
-					m_pAIController->hitFloor(dt);
+					if (collision.CheckSpriteCollision(gene->bird->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
+					{
+						gene->hitFloor();
+					}
+				}
 
-					clock.restart();
-
-					_hitSound.play();
+				for (unsigned int i = 0; i < pipeSprites.size(); i++)
+				{
+					if (collision.CheckSpriteCollision(gene->bird->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
+					{
+						gene->hitPipe();
+					}
 				}
 			}
 
-			std::vector<sf::Sprite> pipeSprites = pipe->GetSprites();
-
-			for (unsigned int i = 0; i < pipeSprites.size(); i++)
+			if(m_pAIController->isAllBirdsDead())
 			{
-				if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
-				{
-					_gameState = GameStates::eGameOver;
-					m_pAIController->hitPipe(dt);
+				_gameState = GameStates::eGameOver;
 
-					clock.restart();
+				clock.restart();
 
-					_hitSound.play();
-				}
+				_hitSound.play();
 			}
 
 			if (GameStates::ePlaying == _gameState)
@@ -174,16 +178,32 @@ namespace Sonar
 
 				for (unsigned int i = 0; i < scoringSprites.size(); i++)
 				{
-					if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
+					bool hasScored = false;
+					for (DnaGene* gene : vecBirdBrains)
 					{
-						_score++;
-						m_pAIController->hitGap(dt);
+						if (hasScored)
+						{
+							gene->hitGap();
+							continue;
+						}
 
-						hud->UpdateScore(_score);
+						if (collision.CheckSpriteCollision(
+							bird->GetSprite(),
+							0.625f, 
+							scoringSprites.at(i),
+							1.0f,
+							false))
+						{
+							_score++;
+							hasScored = true;
+							gene->hitGap();
 
-						scoringSprites.erase(scoringSprites.begin() + i);
+							hud->UpdateScore(_score);
 
-						_pointSound.play();
+							scoringSprites.erase(scoringSprites.begin() + i);
+
+							_pointSound.play();
+						}
 					}
 				}
 			}
@@ -210,7 +230,14 @@ namespace Sonar
 
 		pipe->DrawPipes();
 		land->DrawLand();
-		bird->Draw();
+
+		//bird->Draw();
+		std::vector<DnaGene*> vecBirdBrains = m_pAIController->getDnaGenes();
+		for (DnaGene* gene : vecBirdBrains)
+		{
+			if (!gene->bIsDead)
+				gene->bird->Draw();
+		}
 
 		flash->Draw();
 

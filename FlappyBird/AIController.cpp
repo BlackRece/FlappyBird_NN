@@ -15,9 +15,7 @@ AIController::AIController()
 	m_pGameState = nullptr;
 	m_bShouldFlap = false;
 
-	m_bGameOver = false;
-
-	m_mapBirds = std::map<Bird*, NN*>();
+	//m_mapBirds = std::map<Bird*, NN*>();
 	// inputs
 	// 1. distance to floor
 	// 2. distance to nearest pipe
@@ -30,7 +28,8 @@ AIController::AIController()
 	// 
 	// outputs
 	// 1. output >= 0.5 flap, output < 0.5 don't flap
-	m_pBrain = new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT);
+	//m_pBrain = new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT);
+	m_vecDnaGenes = std::vector<DnaGene*>();
 }					  
 
 AIController::~AIController()
@@ -41,10 +40,24 @@ AIController::~AIController()
 void AIController::initBirds(GameDataRef data)
 {
 	for (int i = 0; i < BIRD_COUNT; i++)
-		m_mapBirds.insert(std::make_pair(
-			new Bird(data),
-			new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT)
-		));
+	{
+		DnaGene* gene = new DnaGene(
+			new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT),
+			new Bird(data)
+		);
+
+		m_vecDnaGenes.push_back(gene);
+	}
+}
+
+std::vector<Bird*> AIController::getBirds()
+{
+	std::vector<Bird*> vecBirds;
+
+	for (DnaGene* birdBrain : m_vecDnaGenes)
+		vecBirds.push_back(birdBrain->bird);
+
+	return vecBirds;
 }
 
 // update - the AI method which determines whether the bird should flap or not. 
@@ -56,28 +69,36 @@ void AIController::handleInput()
 
 	Pipe* pipe = m_pGameState->GetPipeContainer();
 	Land* land = m_pGameState->GetLandContainer();
-	Bird* bird = m_pGameState->GetBird();
+	//Bird* bird = m_pGameState->GetBird();
 	
-	float fDistanceToFloor = distanceToFloor(land, bird);
-	
-	float fDistanceToNearestPipe = distanceToNearestPipes(pipe, bird);
-	float fDistanceToCentreOfGap = ERROR_DISTANCE;
-
-	if (fDistanceToNearestPipe != ERROR_DISTANCE) 
-		fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, bird);
-
-	double inputs[INPUT_COUNT] =
+	for (DnaGene* birdBrain : m_vecDnaGenes)
 	{
-		(double)fDistanceToFloor, 
-		(double)fDistanceToNearestPipe, 
-		(double)fDistanceToCentreOfGap, 
-		(double)bird->GetSprite().getPosition().y,
-		(double)bird->getVelocity()
-	};
+		float fDistanceToFloor = distanceToFloor(land, birdBrain->bird);
+	
+		float fDistanceToNearestPipe = distanceToNearestPipes(pipe, birdBrain->bird);
+		float fDistanceToCentreOfGap = ERROR_DISTANCE;
 
-	double* score = m_pBrain->feedForward(inputs, INPUT_COUNT);
-	if(score[0] >= 0.5)
-		m_bShouldFlap = true;
+		if (fDistanceToNearestPipe != ERROR_DISTANCE) 
+			fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, birdBrain->bird);
+
+		double inputs[INPUT_COUNT] =
+		{
+			(double)fDistanceToFloor, 
+			(double)fDistanceToNearestPipe, 
+			(double)fDistanceToCentreOfGap, 
+			(double)birdBrain->bird->GetSprite().getPosition().y,
+			(double)birdBrain->bird->getVelocity()
+		};
+
+		double* score = birdBrain->nn->feedForward(inputs, INPUT_COUNT);
+		if(score[0] >= 0.5)
+			birdBrain->bShouldFlap = true;
+	}
+
+
+	//double* score = m_pBrain->feedForward(inputs, INPUT_COUNT);
+	//if(score[0] >= 0.5)
+	//	m_bShouldFlap = true;
 
 	//std::vector<Bird*> vecBirds = m_pGameState->GetBirds();
 
@@ -86,16 +107,16 @@ void AIController::handleInput()
 	//{
 	//	// get the distance to the floor
 	//	float fDistanceToFloor = distanceToFloor(land, bird);
-
+	//
 	//	// get the distance to the nearest pipe
 	//	float fDistanceToNearestPipe = distanceToNearestPipes(pipe, bird);
-
+	//
 	//	// if there is a pipe
 	//	if (fDistanceToNearestPipe != ERROR_DISTANCE) {
 	//		// get the distance to the centre of the gap
 	//		float fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, bird);
 	//		fDistanceToCentreOfGap = fDistanceToCentreOfGap;	// <-- whats this for?!
-
+	//
 	//		// if the bird is above the centre of the gap, flap
 	//		if (bird->GetSprite().getPosition().y < fDistanceToCentreOfGap)
 	//			m_bShouldFlap = true;
@@ -111,32 +132,28 @@ void AIController::handleInput()
 
 void AIController::update(float dt)
 {
-	if(shouldFlap())
-		m_pGameState->GetBird()->Tap();
-}
+	for (DnaGene* birdBrain : m_vecDnaGenes)
+	{
+		if(birdBrain->bIsDead)
+			continue;
 
-void AIController::hitFloor(float dt)
-{
-	m_ga_score -= 100;
-}
+		birdBrain->bird->Update(dt);
 
-void AIController::hitPipe(float dt)
-{
-	m_ga_score -= 10;
-}
-
-void AIController::hitGap(float dt)
-{
-	m_ga_score += 10;
+		if (birdBrain->bShouldFlap)
+		{
+			birdBrain->bird->Tap();
+			birdBrain->bShouldFlap = false;
+		}
+	}
 }
 
 void AIController::gameOver(float dt)
 {
-	if (m_bGameOver)
-		return;
+	// calculate the score for each bird
+	for (DnaGene* birdBrain : m_vecDnaGenes)
+		std::cout << "\nscore: " << birdBrain->iScore << "\n";
 
-	std::cout << "\nscore: " << m_ga_score << "\n";
-	m_bGameOver = true;
+	std::cout << "\next generation\n";
 }
 
 float AIController::distanceToFloor(Land* land, Bird* bird)
@@ -228,5 +245,15 @@ bool AIController::shouldFlap()
 	m_bShouldFlap = false;
 
 	return output;
+}
+
+bool AIController::isAllBirdsDead()
+{
+	for (DnaGene* birdBrain : m_vecDnaGenes)
+	{
+		if (!birdBrain->bIsDead)
+			return false;
+	}
+	return true;
 }
 
