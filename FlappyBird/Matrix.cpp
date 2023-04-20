@@ -1,4 +1,5 @@
 #include "Matrix.h"
+using json = nlohmann::json;
 
 Matrix::Matrix(unsigned iRows, unsigned iCols)
 	: m_iRows(iRows), m_iCols(iCols)
@@ -178,6 +179,27 @@ double* Matrix::toArray() const
 	for (int i = 0; i < m_iRows * m_iCols; i++)
 		dArray[i] = m_dData[i];
 	return dArray;
+}
+
+MatrixJson Matrix::toJson() const
+{
+	MatrixJson json;
+
+	json.iRows = m_iRows;
+	json.iCols = m_iCols;
+
+	for (double d : m_dData)
+		json.vData.push_back(d);
+
+	return json;
+}
+
+Matrix Matrix::fromJson(MatrixJson json) const
+{
+	Matrix m(json.iRows, json.iCols);
+	for (int i = 0; i < json.vData.size(); i++)
+		m.m_dData[i] = json.vData[i];
+	return m;
 }
 
 void Matrix::print() const

@@ -23,6 +23,9 @@ NN::NN(int iInputCount, int iHiddenCount, int iOutputCount)
 
 	m_mBiasH = m_mBiasH.map(fnRandomDouble);
 	m_mBiasO = m_mBiasO.map(fnRandomDouble);
+
+	// set default learning rate
+	m_dLearningRate = LEARNING_RATE;
 }
 
 double* NN::feedForward(const double dInputs[], const int iInputCount)
@@ -101,4 +104,47 @@ void NN::trainFeedForward(const double dInputs[], const int iInputCount, const d
 	// apply input->hidden biases
 	m_mBiasH = m_mBiasH.add(mHiddenGradients);
 
+}
+
+void NN::save(const std::string sFileName)
+{
+	// save json file using JsonParser
+	NNJson json;
+	json.dLearningRate = m_dLearningRate;
+
+	json.iInputNodes = m_iInputCount;
+	json.iHiddenNodes = m_iHiddenCount;
+	json.iOutputNodes = m_iOutputCount;
+
+	json.mInputWeights = m_mWeightsIH.toJson();
+	json.mHiddenWeights = m_mWeightsHO.toJson();
+
+	json.mBiasHidden = m_mBiasH.toJson();
+	json.mBiasOutput = m_mBiasO.toJson();
+
+	JsonParser::SaveJson(json, sFileName);
+}
+
+void NN::load(const std::string sFileName)
+{
+	// load json file using JsonParser
+	NNJson json;
+	JsonParser::LoadJson(json, sFileName);
+	if (json.iInputNodes == 0 || json.iHiddenNodes == 0 || json.iOutputNodes == 0)
+	{
+		std::cout << "Error: Invalid JSON file" << std::endl;
+		return;
+	}
+
+	m_dLearningRate = json.dLearningRate;
+
+	m_iInputCount = json.iInputNodes;
+	m_iHiddenCount = json.iHiddenNodes;
+	m_iOutputCount = json.iOutputNodes;
+
+	m_mWeightsIH = m_mWeightsIH.fromJson(json.mInputWeights);
+	m_mWeightsHO = m_mWeightsHO.fromJson(json.mHiddenWeights);
+
+	m_mBiasH = m_mBiasH.fromJson(json.mBiasHidden);
+	m_mBiasO = m_mBiasO.fromJson(json.mBiasOutput);
 }

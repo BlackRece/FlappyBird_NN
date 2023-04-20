@@ -7,6 +7,8 @@
 #include <iostream>
 #include <functional>
 
+#include "Structures.h"
+
 class Matrix
 {
 public:
@@ -53,8 +55,10 @@ public:
 	Matrix map(std::function<double()>& func);
 
 	// helper functions
-	Matrix fromArray(const double dArray[], const int iArraySize, bool bIsCol = true);
 	double* toArray() const;
+	Matrix fromArray(const double dArray[], const int iArraySize, bool bIsCol = true);
+	MatrixJson toJson() const;
+	Matrix fromJson(MatrixJson json) const;
 
 	// debug functions
 	void print() const;

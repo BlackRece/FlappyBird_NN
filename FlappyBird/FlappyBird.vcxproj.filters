@@ -114,6 +114,12 @@
     <ClInclude Include="Matrix.h">
       <Filter>AI Code</Filter>
     </ClInclude>
+    <ClInclude Include="JsonParser.h">
+      <Filter>AI Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures.h">
+      <Filter>AI Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Media Include="Resources\audio\Hit.wav">
@@ -200,5 +206,8 @@
     <Filter Include="Core code &amp; Assets">
       <UniqueIdentifier>{908122a9-2515-4d27-86f3-39552f92b980}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
