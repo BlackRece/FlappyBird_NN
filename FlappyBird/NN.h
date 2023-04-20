@@ -4,7 +4,6 @@
 
 #include <string>
 #include "Matrix.h"
-//#include "JsonParser.h"
 #include "Structures.h"
 
 #define LEARNING_RATE 0.1
@@ -22,6 +21,7 @@ class NN
 {
 public:
 	NN(int iInputCount, int iHiddenCount, int iOutputCount);
+	NN(const NN& nn);
 	~NN() { ; }
 
 	double* feedForward(const double dInputs[], const int iInputCount);
@@ -43,6 +43,10 @@ public:
 	void save(const std::string sFileName);
 	void load(const std::string sFileName);
 
+	// genetic algorithm functions
+	NN clone() { return NN(*this); }
+	void mutate(double dRate);
+
 private:
 	double m_dLearningRate;
 	int m_iInputCount;
@@ -58,6 +62,11 @@ private:
 
 	Matrix m_mBiasH;
 	Matrix m_mBiasO;
+
+	std::function<double()> m_fnRandom = std::bind(&NN::random, this, -1.0, 1.0);
+	std::function<double(double)> m_fnSigmoid = std::bind(&NN::sigmoid, this, std::placeholders::_1);
+	std::function<double(double)> m_fnSigmoidDerivative = std::bind(&NN::sigmoidDerivative, this, std::placeholders::_1);
+
 };
 
 #endif // !NN_H

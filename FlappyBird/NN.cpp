@@ -3,9 +3,6 @@
 NN::NN(int iInputCount, int iHiddenCount, int iOutputCount)
 	: m_iInputCount(iInputCount), m_iHiddenCount(iHiddenCount), m_iOutputCount(iOutputCount)
 {
-	// prepare function to random every element in matrix
-	std::function<double()> fnRandomDouble = std::bind(&NN::random, this, -1.0, 1.0);
-
 	// create matrices
 	m_mInput = Matrix(m_iInputCount, 1);
 	m_mHidden = Matrix(m_iHiddenCount, 1);
@@ -18,14 +15,33 @@ NN::NN(int iInputCount, int iHiddenCount, int iOutputCount)
 	m_mBiasO = Matrix(m_iOutputCount, 1);
 
 	// randomize weights and biases
-	m_mWeightsIH = m_mWeightsIH.map(fnRandomDouble);
-	m_mWeightsHO = m_mWeightsHO.map(fnRandomDouble);
+	m_mWeightsIH = m_mWeightsIH.map(m_fnRandom);
+	m_mWeightsHO = m_mWeightsHO.map(m_fnRandom);
 
-	m_mBiasH = m_mBiasH.map(fnRandomDouble);
-	m_mBiasO = m_mBiasO.map(fnRandomDouble);
+	m_mBiasH = m_mBiasH.map(m_fnRandom);
+	m_mBiasO = m_mBiasO.map(m_fnRandom);
 
 	// set default learning rate
 	m_dLearningRate = LEARNING_RATE;
+}
+
+NN::NN(const NN& nn)
+{
+	m_iInputCount = nn.m_iInputCount;
+	m_iHiddenCount = nn.m_iHiddenCount;
+	m_iOutputCount = nn.m_iOutputCount;
+
+	m_mInput = nn.m_mInput;
+	m_mHidden = nn.m_mHidden;
+	m_mOutput = nn.m_mOutput;
+
+	m_mWeightsIH = nn.m_mWeightsIH;
+	m_mWeightsHO = nn.m_mWeightsHO;
+
+	m_mBiasH = nn.m_mBiasH;
+	m_mBiasO = nn.m_mBiasO;
+
+	m_dLearningRate = nn.m_dLearningRate;
 }
 
 double* NN::feedForward(const double dInputs[], const int iInputCount)
@@ -38,16 +54,15 @@ double* NN::feedForward(const double dInputs[], const int iInputCount)
 	m_mHidden = m_mWeightsIH.dot(m_mInput);
 	m_mHidden = m_mHidden.add(m_mBiasH);
 
-	// prepare and apply activation function
-	std::function<double(double)> fnSigmoid = std::bind(&NN::sigmoid, this, std::placeholders::_1);
-	m_mHidden = m_mHidden.map(fnSigmoid);
+	// apply activation function
+	m_mHidden = m_mHidden.map(m_fnSigmoid);
 
 	// apply weights and biases to hidden layer
 	m_mOutput = m_mWeightsHO.dot(m_mHidden);
 	m_mOutput = m_mOutput.add(m_mBiasO);
 
 	// apply activation function
-	m_mOutput = m_mOutput.map(fnSigmoid);
+	m_mOutput = m_mOutput.map(m_fnSigmoid);
 
 	// return result as array
 	return m_mOutput.toArray();
@@ -68,8 +83,7 @@ void NN::trainFeedForward(const double dInputs[], const int iInputCount, const d
 	Matrix mOutputErrors = mTargets.sub(mOutputs);
 
 	// calculate hidden-output gradients via gradient descent
-	std::function<double(double)> fnSigmoidDerivative = std::bind(&NN::sigmoidDerivative, this, std::placeholders::_1);
-	Matrix mOutputGradients = mOutputs.map(fnSigmoidDerivative);
+	Matrix mOutputGradients = mOutputs.map(m_fnSigmoidDerivative);
 	mOutputGradients = mOutputGradients.mul(mOutputErrors);
 
 	double dLearningRate = 1.0;		// TODO: make this a member variable that starts at 0.1 and decreases over time
@@ -90,7 +104,7 @@ void NN::trainFeedForward(const double dInputs[], const int iInputCount, const d
 	Matrix mHiddenErrors = mWeightsHO_T.dot(mOutputErrors);
 
 	// calculate input->hidden gradients via gradient descent
-	Matrix mHiddenGradients = m_mHidden.map(fnSigmoidDerivative);
+	Matrix mHiddenGradients = m_mHidden.map(m_fnSigmoidDerivative);
 	mHiddenGradients = mHiddenGradients.mul(mHiddenErrors);
 	mHiddenGradients = mHiddenGradients.mul(dLearningRate);
 
@@ -147,4 +161,16 @@ void NN::load(const std::string sFileName)
 
 	m_mBiasH = m_mBiasH.fromJson(json.mBiasHidden);
 	m_mBiasO = m_mBiasO.fromJson(json.mBiasOutput);
+}
+
+void NN::mutate(double dRate)
+{
+	if (random(100.0) > dRate)
+		return;
+
+	m_mWeightsIH = m_mWeightsIH.map(m_fnRandom);
+	m_mWeightsHO = m_mWeightsHO.map(m_fnRandom);
+
+	m_mBiasH = m_mBiasH.map(m_fnRandom);
+	m_mBiasO = m_mBiasO.map(m_fnRandom);
 }
