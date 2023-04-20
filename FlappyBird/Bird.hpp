@@ -26,6 +26,8 @@ namespace Sonar
 		const sf::Sprite &GetSprite() const;
 
 		void getHeight(int& x, int& y);
+		
+		float getVelocity();
 
 	private:
 		GameDataRef _data;

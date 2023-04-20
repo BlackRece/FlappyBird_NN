@@ -8,7 +8,8 @@
 
 #include <iostream>
 
-#define PLAY_WITH_AI 1
+#define PLAY_WITH_AI true
+#define BIRD_COUNT 10
 
 namespace Sonar
 {
@@ -53,6 +54,8 @@ namespace Sonar
 		pipe = new Pipe(_data);
 		land = new Land(_data);
 		bird = new Bird(_data);
+		m_pAIController->initBirds(_data);
+		
 		flash = new Flash(_data);
 		hud = new HUD(_data);
 
@@ -66,25 +69,26 @@ namespace Sonar
 
 	void GameState::HandleInput()
 	{
-#if PLAY_WITH_AI
-		if (GameStates::eGameOver != _gameState)
+		if (PLAY_WITH_AI)
 		{
-			_gameState = GameStates::ePlaying;
-
-			m_pAIController->update();
-
-			if (m_pAIController->shouldFlap())
+			if (GameStates::eGameOver != _gameState)
 			{
-				std::cout << "tap!" << std::endl;
-				bird->Tap();
-				_wingSound.play();
-			}
-			else {
-				std::cout << "not tap :(" << std::endl;
+				_gameState = GameStates::ePlaying;
+
+				m_pAIController->handleInput();
+
+				if (m_pAIController->shouldFlap())
+				{
+					//std::cout << "tap!" << std::endl;
+					bird->Tap();
+					_wingSound.play();
+				}
+				else 
+				{
+					//std::cout << "not tap :(" << std::endl;
+				}
 			}
 		}
-
-#endif
 
 		sf::Event event;
 		while (this->_data->window.pollEvent(event))
@@ -132,6 +136,7 @@ namespace Sonar
 			}
 
 			bird->Update(dt);
+			//m_pAIController->update(dt);
 
 			std::vector<sf::Sprite> landSprites = land->GetSprites();
 
@@ -140,6 +145,7 @@ namespace Sonar
 				if (collision.CheckSpriteCollision(bird->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
 				{
 					_gameState = GameStates::eGameOver;
+					m_pAIController->hitFloor(dt);
 
 					clock.restart();
 
@@ -154,6 +160,7 @@ namespace Sonar
 				if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
 				{
 					_gameState = GameStates::eGameOver;
+					m_pAIController->hitPipe(dt);
 
 					clock.restart();
 
@@ -170,6 +177,7 @@ namespace Sonar
 					if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
 					{
 						_score++;
+						m_pAIController->hitGap(dt);
 
 						hud->UpdateScore(_score);
 
@@ -183,6 +191,8 @@ namespace Sonar
 
 		if (GameStates::eGameOver == _gameState)
 		{
+			m_pAIController->gameOver(dt);
+
 			flash->Show(dt);
 
 			if (clock.getElapsedTime().asSeconds() > TIME_BEFORE_GAME_OVER_APPEARS)

@@ -110,4 +110,21 @@ namespace Sonar
 		x = (int)v.x;
 		y = (int)v.y;
 	}
+	
+	float Bird::getVelocity()
+	{
+		float fVelocity = .0f;
+
+		switch (_birdState)
+		{
+			case BIRD_STATE_FALLING:
+				fVelocity = GRAVITY * _movementClock.getElapsedTime().asSeconds();
+			break;
+			case BIRD_STATE_FLYING:
+				fVelocity = -FLYING_SPEED * _movementClock.getElapsedTime().asSeconds();
+			break;
+		}
+
+		return fVelocity;
+	}
 }

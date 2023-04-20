@@ -1,45 +1,6 @@
 ﻿  AIController.cpp
-  AssetManager.cpp
-  Bird.cpp
-  Collision.cpp
-  Flash.cpp
-  Game.cpp
-  GameOverState.cpp
   GameState.cpp
-  HUD.cpp
-  InputManager.cpp
-  Land.cpp
-  main.cpp
-  MainMenuState.cpp
-  Matrix.cpp
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(25,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(33,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(41,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(49,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(59,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(69,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(81,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(92,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(107,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(108,21): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(123,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(124,21): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(132,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(133,21): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(141,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(142,21): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(149,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(150,21): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(179,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(200,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(207,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(209,21): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(217,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(240,20): warning C4018: '<': signed/unsigned mismatch
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\Matrix.cpp(248,20): warning C4018: '<': signed/unsigned mismatch
-  NN.cpp
-  Pipe.cpp
-  SplashState.cpp
-  StateMachine.cpp
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\GameState.cpp(12,1): warning C4005: 'BIRD_COUNT': macro redefinition
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\AIController.h(6,1): message : see previous definition of 'BIRD_COUNT'
   Generating Code...
   FlappyBird.vcxproj -> D:\GitHub\AI Course\FlappyBird_NN\Debug\FlappyBird.exe
