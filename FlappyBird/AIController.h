@@ -2,6 +2,8 @@
 
 #include "GameState.hpp"
 #include "NN.h"
+#include "GAM.h"
+#include "Structures.h"
 
 #define BIRD_COUNT 100
 
@@ -27,6 +29,8 @@ struct DnaGene
 		bShouldFlap(false), bIsDead(false) {}
 };
 
+
+
 class AIController
 {
 public:
@@ -35,15 +39,15 @@ public:
 
 	void initBirds(GameDataRef data);
 	std::vector<Bird*> getBirds();
-	std::vector<DnaGene*> getDnaGenes() { return m_vecDnaGenes; }
+	std::vector<DNA*> getDna() { return m_pGAM->getChromos(); }
+	void draw() { m_pGAM->draw(); }
 
 	void setGameState(GameState* pGameState) { m_pGameState = pGameState; }
 	void handleInput();
-	void update(float dt);
 	void gameOver(float dt);
 	
 	bool shouldFlap(); // note when this is called, it resets the flap state
-	bool isAllBirdsDead();
+	bool isAllBirdsDead() { return m_pGAM->isAllDead(); }
 
 private:
 	float distanceToFloor(Land* land, Bird* bird);
@@ -56,5 +60,6 @@ private:
 	std::vector<DnaGene*> m_vecDnaGenes;
 
 	NN*			m_pBrain;
+	GAM*		m_pGAM;
 };
 

@@ -4,6 +4,7 @@
 
 #include <vector>
 #include "JsonParser.h"
+#include "Game.hpp"
 
 struct MatrixJson
 {
@@ -36,4 +37,15 @@ struct NNJson
 	);
 };
 
+struct GeneData
+{
+	int iInputCount;
+	int iHiddenCount;
+	int iOutputCount;
+	Sonar::GameDataRef gdrData;
+
+	GeneData(int iInput, int iHidden, int iOutput, Sonar::GameDataRef gdr) :
+		iInputCount(iInput), iHiddenCount(iHidden), iOutputCount(iOutput),
+		gdrData(gdr) {}
+};
 #endif // !STRUCTURES_H

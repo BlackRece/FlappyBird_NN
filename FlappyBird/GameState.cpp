@@ -113,9 +113,13 @@ namespace Sonar
 
 	void GameState::Update(float dt)
 	{
+		std::vector<Bird*> vecBirds = m_pAIController->getBirds();
+		
 		if (GameStates::eGameOver != _gameState)
 		{
-			bird->Animate(dt);
+			for (Bird* bird : vecBirds)
+				bird->Animate(dt);
+
 			land->MoveLand(dt);
 		}
 
@@ -135,30 +139,40 @@ namespace Sonar
 				clock.restart();
 			}
 
-			//bird->Update(dt);
-			m_pAIController->update(dt);
+			for (Bird* bird : vecBirds)
+				bird->Update(dt);
 
 			//std::vector<Bird*> vecBirds = m_pAIController->getBirds();
-			std::vector<DnaGene*> vecBirdBrains = m_pAIController->getDnaGenes();
+			std::vector<DNA*> vecBirdBrains = m_pAIController->getDna();
 
 			std::vector<sf::Sprite> landSprites = land->GetSprites();
 			std::vector<sf::Sprite> pipeSprites = pipe->GetSprites();
 
-			for (DnaGene* gene : vecBirdBrains)
+			for (DNA* birdDna : vecBirdBrains)
 			{
 				for (unsigned int i = 0; i < landSprites.size(); i++)
 				{
-					if (collision.CheckSpriteCollision(gene->bird->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
+					if (collision.CheckSpriteCollision(
+						birdDna->getBird()->GetSprite(),
+						0.7f, 
+						landSprites.at(i), 
+						1.0f, 
+						false))
 					{
-						gene->hitFloor();
+						birdDna->onHit(Hit::Floor);
 					}
 				}
 
 				for (unsigned int i = 0; i < pipeSprites.size(); i++)
 				{
-					if (collision.CheckSpriteCollision(gene->bird->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
+					if (collision.CheckSpriteCollision(
+						birdDna->getBird()->GetSprite(),
+						0.625f, 
+						pipeSprites.at(i),
+						1.0f, 
+						true))
 					{
-						gene->hitPipe();
+						birdDna->onHit(Hit::Pipe);
 					}
 				}
 			}
@@ -179,11 +193,11 @@ namespace Sonar
 				for (unsigned int i = 0; i < scoringSprites.size(); i++)
 				{
 					bool hasScored = false;
-					for (DnaGene* gene : vecBirdBrains)
+					for (DNA* birdDna : vecBirdBrains)
 					{
 						if (hasScored)
 						{
-							gene->hitGap();
+							birdDna->onHit(Hit::Gap);
 							continue;
 						}
 
@@ -196,7 +210,7 @@ namespace Sonar
 						{
 							_score++;
 							hasScored = true;
-							gene->hitGap();
+							birdDna->onHit(Hit::Gap);
 
 							hud->UpdateScore(_score);
 
@@ -232,12 +246,7 @@ namespace Sonar
 		land->DrawLand();
 
 		//bird->Draw();
-		std::vector<DnaGene*> vecBirdBrains = m_pAIController->getDnaGenes();
-		for (DnaGene* gene : vecBirdBrains)
-		{
-			if (!gene->bIsDead)
-				gene->bird->Draw();
-		}
+		m_pAIController->draw();
 
 		flash->Draw();
 

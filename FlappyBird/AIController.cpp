@@ -30,6 +30,7 @@ AIController::AIController()
 	// 1. output >= 0.5 flap, output < 0.5 don't flap
 	//m_pBrain = new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT);
 	m_vecDnaGenes = std::vector<DnaGene*>();
+	m_pGAM = new GAM();
 }					  
 
 AIController::~AIController()
@@ -39,25 +40,13 @@ AIController::~AIController()
 
 void AIController::initBirds(GameDataRef data)
 {
-	for (int i = 0; i < BIRD_COUNT; i++)
-	{
-		DnaGene* gene = new DnaGene(
-			new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT),
-			new Bird(data)
-		);
-
-		m_vecDnaGenes.push_back(gene);
-	}
+	GeneData gene = GeneData(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT, data);
+	m_pGAM->addToPopulation(gene, BIRD_COUNT);
 }
 
 std::vector<Bird*> AIController::getBirds()
 {
-	std::vector<Bird*> vecBirds;
-
-	for (DnaGene* birdBrain : m_vecDnaGenes)
-		vecBirds.push_back(birdBrain->bird);
-
-	return vecBirds;
+	return m_pGAM->getBirds();
 }
 
 // update - the AI method which determines whether the bird should flap or not. 
@@ -71,28 +60,33 @@ void AIController::handleInput()
 	Land* land = m_pGameState->GetLandContainer();
 	//Bird* bird = m_pGameState->GetBird();
 	
-	for (DnaGene* birdBrain : m_vecDnaGenes)
+	for (DNA* birdBrain : m_pGAM->getChromos())
 	{
-		float fDistanceToFloor = distanceToFloor(land, birdBrain->bird);
+		Bird* bird = birdBrain->getBird();
+
+		float fDistanceToFloor = distanceToFloor(land, bird);
 	
-		float fDistanceToNearestPipe = distanceToNearestPipes(pipe, birdBrain->bird);
+		float fDistanceToNearestPipe = distanceToNearestPipes(pipe, bird);
 		float fDistanceToCentreOfGap = ERROR_DISTANCE;
 
 		if (fDistanceToNearestPipe != ERROR_DISTANCE) 
-			fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, birdBrain->bird);
+			fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, bird);
 
-		double inputs[INPUT_COUNT] =
+		double inputs[] =
 		{
 			(double)fDistanceToFloor, 
 			(double)fDistanceToNearestPipe, 
 			(double)fDistanceToCentreOfGap, 
-			(double)birdBrain->bird->GetSprite().getPosition().y,
-			(double)birdBrain->bird->getVelocity()
+			(double)bird->GetSprite().getPosition().y,
+			(double)bird->getVelocity()
 		};
 
-		double* score = birdBrain->nn->feedForward(inputs, INPUT_COUNT);
-		if(score[0] >= 0.5)
-			birdBrain->bShouldFlap = true;
+		birdBrain->getGuess(inputs, INPUT_COUNT);
+
+		//NN* nn = birdBrain->getGuess();
+		//double* score = nn->feedForward(inputs, INPUT_COUNT);
+		//if(score[0] >= 0.5)
+		//	birdBrain->bShouldFlap = true;
 	}
 
 
@@ -130,28 +124,29 @@ void AIController::handleInput()
 	return;
 }
 
-void AIController::update(float dt)
-{
-	for (DnaGene* birdBrain : m_vecDnaGenes)
-	{
-		if(birdBrain->bIsDead)
-			continue;
-
-		birdBrain->bird->Update(dt);
-
-		if (birdBrain->bShouldFlap)
-		{
-			birdBrain->bird->Tap();
-			birdBrain->bShouldFlap = false;
-		}
-	}
-}
+//void AIController::update(float dt)
+//{
+//	m_pGAM->update(dt);
+//	//for (DnaGene* birdBrain : m_vecDnaGenes)
+//	//{
+//	//	if(birdBrain->bIsDead)
+//	//		continue;
+//	//
+//	//	birdBrain->bird->Update(dt);
+//	//
+//	//	if (birdBrain->bShouldFlap)
+//	//	{
+//	//		birdBrain->bird->Tap();
+//	//		birdBrain->bShouldFlap = false;
+//	//	}
+//	//}
+//}
 
 void AIController::gameOver(float dt)
 {
 	// calculate the score for each bird
-	for (DnaGene* birdBrain : m_vecDnaGenes)
-		std::cout << "\nscore: " << birdBrain->iScore << "\n";
+	//for (DnaGene* birdBrain : m_vecDnaGenes)
+	//	std::cout << "\nscore: " << birdBrain->iScore << "\n";
 
 	std::cout << "\next generation\n";
 }
@@ -246,14 +241,3 @@ bool AIController::shouldFlap()
 
 	return output;
 }
-
-bool AIController::isAllBirdsDead()
-{
-	for (DnaGene* birdBrain : m_vecDnaGenes)
-	{
-		if (!birdBrain->bIsDead)
-			return false;
-	}
-	return true;
-}
-

@@ -55,6 +55,12 @@
     <ClCompile Include="Matrix.cpp">
       <Filter>AI Code</Filter>
     </ClCompile>
+    <ClCompile Include="GAM.cpp">
+      <Filter>AI Code</Filter>
+    </ClCompile>
+    <ClCompile Include="DNA.cpp">
+      <Filter>AI Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetManager.hpp">
@@ -118,6 +124,12 @@
       <Filter>AI Code</Filter>
     </ClInclude>
     <ClInclude Include="Structures.h">
+      <Filter>AI Code</Filter>
+    </ClInclude>
+    <ClInclude Include="GAM.h">
+      <Filter>AI Code</Filter>
+    </ClInclude>
+    <ClInclude Include="DNA.h">
       <Filter>AI Code</Filter>
     </ClInclude>
   </ItemGroup>

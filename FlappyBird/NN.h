@@ -40,8 +40,11 @@ public:
 	double randomDouble() { return -2 + (2 - -2) * ((double)rand() / RAND_MAX); }
 
 	// json functions
-	void save(const std::string sFileName);
-	void load(const std::string sFileName);
+	NNJson toJson();
+	void fromJson(NNJson nnJson);
+
+	void save(const std::string sFileName) { JsonParser::SaveJson(toJson(), sFileName); }
+	NNJson load(const std::string sFileName);
 
 	// genetic algorithm functions
 	NN clone() { return NN(*this); }
