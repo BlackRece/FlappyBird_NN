@@ -22,7 +22,7 @@ class NN
 public:
 	NN(int iInputCount, int iHiddenCount, int iOutputCount);
 	NN(const NN& nn);
-	~NN() { ; }
+	~NN();
 
 	double* feedForward(const double dInputs[], const int iInputCount);
 	void trainFeedForward(const double dInputs[], const int iInputCount, const double dTargets[], const int iTargetCount);
@@ -47,7 +47,7 @@ public:
 	NNJson load(const std::string sFileName);
 
 	// genetic algorithm functions
-	NN* clone() { return new NN(*this); }
+	NN* clone() const { return new NN(*this); }
 	void mutate(double dRate);
 	Matrix* getWeightsIH() { return m_mWeightsIH; }
 	Matrix* getWeightsHO() { return m_mWeightsHO; }

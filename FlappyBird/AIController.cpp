@@ -147,7 +147,12 @@ void AIController::handleInput()
 
 void AIController::gameOver(float dt)
 {
-	m_pBrain = m_pGAM->getBrainToTrain();
+	NN* birdBrain = m_pGAM->getBrainToTrain();
+	if (birdBrain != nullptr)
+		m_pBrain = birdBrain;
+	else
+		m_pBrain = m_pBrain;
+	
 	if (m_pBrain != nullptr)
 	{
 		for (TrainingData data : m_vecTrainingData)

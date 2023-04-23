@@ -25,23 +25,32 @@ NN::NN(int iInputCount, int iHiddenCount, int iOutputCount)
 	m_dLearningRate = LEARNING_RATE;
 }
 
-NN::NN(const NN& nn)
+NN::NN(const NN& nn) :
+	m_iInputCount(nn.m_iInputCount), m_iHiddenCount(nn.m_iHiddenCount),
+	m_iOutputCount(nn.m_iOutputCount), m_dLearningRate(nn.m_dLearningRate)
 {
-	m_iInputCount = nn.m_iInputCount;
-	m_iHiddenCount = nn.m_iHiddenCount;
-	m_iOutputCount = nn.m_iOutputCount;
+	m_mInput = new Matrix(*nn.m_mInput);
+	m_mHidden = new Matrix(*nn.m_mHidden);
+	m_mOutput = new Matrix(*nn.m_mOutput);
 
-	m_mInput = nn.m_mInput;
-	m_mHidden = nn.m_mHidden;
-	m_mOutput = nn.m_mOutput;
+	m_mWeightsIH = new Matrix(*nn.m_mWeightsIH);
+	m_mWeightsHO = new Matrix(*nn.m_mWeightsHO);
 
-	m_mWeightsIH = nn.m_mWeightsIH;
-	m_mWeightsHO = nn.m_mWeightsHO;
+	m_mBiasH = new Matrix(*nn.m_mBiasH);
+	m_mBiasO = new Matrix(*nn.m_mBiasO);
+}
 
-	m_mBiasH = nn.m_mBiasH;
-	m_mBiasO = nn.m_mBiasO;
+NN::~NN()
+{
+	delete m_mInput;
+	delete m_mHidden;
+	delete m_mOutput;
 
-	m_dLearningRate = nn.m_dLearningRate;
+	delete m_mWeightsIH;
+	delete m_mWeightsHO;
+
+	delete m_mBiasH;
+	delete m_mBiasO;
 }
 
 double* NN::feedForward(const double dInputs[], const int iInputCount)

@@ -7,6 +7,13 @@ Matrix::Matrix(unsigned iRows, unsigned iCols)
 	m_dData = std::valarray<double>(m_iRows * m_iCols);
 }
 
+Matrix::Matrix(const Matrix& m) : 
+	m_iRows(m.m_iRows), m_iCols(m.m_iCols),
+	m_dData(std::valarray<double>(m.m_dData))
+{
+	// Note: This implementation copies the valarray object and its contents
+}
+
 double& Matrix::operator()(unsigned iRows, unsigned iCols)
 {
 	checkBounds(iRows, iCols);

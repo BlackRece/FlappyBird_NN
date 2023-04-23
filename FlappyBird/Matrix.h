@@ -12,11 +12,11 @@
 class Matrix
 {
 public:
-	Matrix() :m_iRows(1), m_iCols(1), m_dData(std::valarray<double>(1)) { ; }
+	Matrix() : m_iRows(1), m_iCols(1), m_dData(std::valarray<double>(1)) { ; }
 	inline Matrix(unsigned iRows, unsigned iCols);
+	Matrix(const Matrix& m);               // Copy constructor
 	~Matrix() { ; }
 
-	//Matrix(const Matrix& m);               // Copy constructor
 	//Matrix& operator= (const Matrix& m);   // Assignment operator
 
 	double& operator() (unsigned iRows, unsigned iCols);
