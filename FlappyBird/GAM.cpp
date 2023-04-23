@@ -39,10 +39,9 @@ void GAM::addTrainedBrain(NN* nn)
 	m_vecChromos[99]->setNN(nn);
 }
 
-NN* GAM::getBrainToTrain()
+DNA* GAM::getBirdToTrain()
 {
-	auto birdBrain = findBestDNA(m_vecChromos);
-	return birdBrain->getNN();
+	return findBestDNA(m_vecChromos);
 }
 
 std::vector<Sonar::Bird*> GAM::getBirds()
@@ -85,7 +84,7 @@ void GAM::draw()
 	}
 }
 
-void GAM::nextGeneration()
+void GAM::nextGeneration(DNA* eliteDNA)
 {
 	DebugReport();
 
@@ -101,6 +100,9 @@ void GAM::nextGeneration()
 	// Mutation: mutate crossed chromosomes using a mutation percentage
 	m_vecChromos = mutation(vecCrossed, MUTATION_PERCENTAGE);
 
+	// replace the worst chromosome with the elite chromosome
+	m_vecChromos[m_vecChromos.size() - 1] = eliteDNA;
+
 	// increase generation count
 	m_iGeneration++;
 
@@ -111,6 +113,7 @@ void GAM::nextGeneration()
 DNA* GAM::findBestDNA(std::vector<DNA*> vecSource)
 {
 	DNA* bestDNA = new DNA();
+	bestDNA->setScore(-99999);
 
 	for (DNA* dna : vecSource)
 	{
@@ -124,17 +127,16 @@ DNA* GAM::findBestDNA(std::vector<DNA*> vecSource)
 DNA* GAM::popBestDNA(std::vector<DNA*>& vecSource)
 {
 	DNA* bestDNA = new DNA();
-	int bestScore = -99999;
+	bestDNA->setScore(-99999);
 	int bestIndex = -1;
 	
 	for (int i = 0; i < vecSource.size(); i++)
 	{
 		DNA* dna = vecSource[i];
-		if (bestScore >= dna->getScore())
+		if (bestDNA->getScore() >= dna->getScore())
 			continue;
 
 		bestDNA = dna;
-		bestScore = dna->getScore();
 		bestIndex = i;
 	}
 

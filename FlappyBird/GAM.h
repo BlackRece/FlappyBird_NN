@@ -29,7 +29,7 @@ public:
 
 	void addToPopulation(GeneData gData, int dnaCount);
 	void addTrainedBrain(NN* nn);
-	NN* getBrainToTrain();
+	DNA* getBirdToTrain();
 	std::vector<Sonar::Bird*> getBirds();
 	std::vector<DNA*> getChromos() { return m_vecChromos; }
 
@@ -37,7 +37,7 @@ public:
 	bool isAllDead();
 	void draw();
 
-	void nextGeneration();
+	void nextGeneration(DNA* eliteDNA);
 
 private:
 	DNA* findBestDNA(std::vector<DNA*> vecSource);

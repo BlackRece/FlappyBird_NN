@@ -19,6 +19,17 @@ DNA::DNA(GeneData gData) :
 	m_data = gData.gdrData;
 }
 
+DNA::DNA(const DNA& dna) :
+	m_iScore(dna.m_iScore), m_bIsDead(dna.m_bIsDead), m_fPrediction(dna.m_fPrediction),
+	m_iInputCount(dna.m_iInputCount),
+	m_iHiddenCount(dna.m_iHiddenCount),
+	m_iOutputCount(dna.m_iOutputCount)
+{
+	m_pBird = nullptr; // new Sonar::Bird(dna.m_data);
+	m_pNn = dna.m_pNn->clone();
+	m_data = dna.m_data;
+}
+
 DNA::~DNA()
 {
 	delete m_pBird;
@@ -39,23 +50,6 @@ void DNA::onHit(Hit eHit)
 	}
 
 	m_bIsDead = true;
-}
-
-DNA* DNA::copy()
-{
-	DNA* dna = new DNA();
-	dna->m_iScore = m_iScore;
-
-	dna->m_iInputCount = m_iInputCount;
-	dna->m_iHiddenCount = m_iHiddenCount;
-	dna->m_iOutputCount = m_iOutputCount;
-
-	//dna->m_data = m_data;
-	//dna->m_pBird = new Sonar::Bird(m_data);
-
-	dna->setNN(m_pNn->clone());
-
-	return dna;
 }
 
 void DNA::reset()

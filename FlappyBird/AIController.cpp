@@ -147,7 +147,9 @@ void AIController::handleInput()
 
 void AIController::gameOver(float dt)
 {
-	NN* birdBrain = m_pGAM->getBrainToTrain();
+	DNA* bestBird = m_pGAM->getBirdToTrain()->copy();
+	
+	NN* birdBrain = bestBird->getNN();
 	if (birdBrain != nullptr)
 		m_pBrain = birdBrain;
 	else
@@ -162,10 +164,11 @@ void AIController::gameOver(float dt)
 				data.dOutputs, OUTPUT_COUNT
 			);
 		}
-		m_pGAM->addTrainedBrain(m_pBrain);
 	}
 
-	m_pGAM->nextGeneration();
+	bestBird->setNN(m_pBrain);
+
+	m_pGAM->nextGeneration(bestBird);
 
 	std::cout << "\nnext generation\n";
 }

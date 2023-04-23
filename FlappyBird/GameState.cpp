@@ -250,7 +250,8 @@ namespace Sonar
 		land->DrawLand();
 
 		//bird->Draw();
-		m_pAIController->draw();
+		if (GameStates::eGameOver != _gameState)
+			m_pAIController->draw();
 
 		flash->Draw();
 

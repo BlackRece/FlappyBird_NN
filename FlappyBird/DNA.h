@@ -37,6 +37,7 @@ class DNA
 public:
 	DNA();
 	DNA(GeneData gData);
+	DNA(const DNA& dna);
 	~DNA();
 
 	Sonar::Bird* getBird() { return m_pBird; }
@@ -49,11 +50,12 @@ public:
 	static std::tuple<DNA*, DNA*> crossover(DNA& dnaA, DNA& dnaB);
 
 	int getScore() { return m_iScore; }
+	void setScore(int iScore) { m_iScore = iScore; }
 
 	void onHit(Hit eHit);
 	bool isDead() { return m_bIsDead; }
 	
-	DNA* copy();
+	DNA* copy() const { return new DNA(*this); }
 	void mutate(float fPercent) { m_pNn->mutate((double)fPercent); }
 	void reset();
 
