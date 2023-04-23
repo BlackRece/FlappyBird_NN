@@ -2,20 +2,21 @@
 
 DNA::DNA() :
 	m_iScore(0), m_bIsDead(false), m_fPrediction(0),
-	m_iInputCount(0), m_iOutputCount(0)
+	m_iInputCount(0), m_iHiddenCount(0), m_iOutputCount(0)
 {
 	m_pBird = nullptr;
 	m_pNn = nullptr;
-	m_pGeneData = nullptr;
 }
 
 DNA::DNA(GeneData gData) :
 	m_iScore(0), m_bIsDead(false), m_fPrediction(0), 
-	m_iInputCount(gData.iInputCount), m_iOutputCount(gData.iOutputCount)
+	m_iInputCount(gData.iInputCount), 
+	m_iHiddenCount(gData.iHiddenCount),
+	m_iOutputCount(gData.iOutputCount)
 {
 	m_pBird = new Sonar::Bird(gData.gdrData);
 	m_pNn = new NN(gData.iInputCount, gData.iHiddenCount, gData.iOutputCount);
-	m_pGeneData = &gData;
+	m_data = gData.gdrData;
 }
 
 DNA::~DNA()
@@ -27,15 +28,14 @@ DNA::~DNA()
 
 void DNA::onHit(Hit eHit)
 {
+	if(m_bIsDead)
+		return;
+
 	switch (eHit)
 	{
-	case Hit::Gap:		m_iScore += 10; return;
-	case Hit::Pipe:		m_iScore -= 100; break;
-	case Hit::Floor:	m_iScore -= 1000; break;
-
-	case Hit::None:
-	default:
-		break;
+		case Hit::Gap:		m_iScore += 1000; return;
+		case Hit::Pipe:		m_iScore -= 10; break;
+		case Hit::Floor:	m_iScore -= 100; break;
 	}
 
 	m_bIsDead = true;
@@ -43,11 +43,25 @@ void DNA::onHit(Hit eHit)
 
 DNA* DNA::copy()
 {
-	DNA* dna = new DNA(*m_pGeneData);
-	dna->m_pBird = new Sonar::Bird(m_pGeneData->gdrData);
+	DNA* dna = new DNA();
 	dna->m_iScore = m_iScore;
+
+	dna->m_iInputCount = m_iInputCount;
+	dna->m_iHiddenCount = m_iHiddenCount;
+	dna->m_iOutputCount = m_iOutputCount;
+
+	//dna->m_data = m_data;
+	//dna->m_pBird = new Sonar::Bird(m_data);
+
 	dna->setNN(m_pNn->clone());
+
 	return dna;
+}
+
+void DNA::reset()
+{
+	m_bIsDead = false;
+	m_iScore = 0;
 }
 
 void DNA::getGuess(double* dInputs, int iInputCount)
@@ -64,96 +78,46 @@ void DNA::update(float dt)
 
 	double avgPrediction = 0.0;
 	for (int i = 0; i < m_iOutputCount; i++)
-	{
 		avgPrediction += m_fPrediction[i];
-		avgPrediction /= m_iOutputCount;
-	}
+	
+	avgPrediction /= m_iOutputCount;
+
 	if(avgPrediction >= TRIGGER_TARGET)
 		m_pBird->Tap();
 }
 
-//DNA* DNA::setHigh() {
-//	DNA* dna = new DNA();
-//	dna->m_iScore = RAND_MAX;
-//	dna->m_duration = RAND_MAX;
-//	dna->m_iKills = RAND_MAX;
-//	return dna;
-//}
-
 std::tuple<DNA*, DNA*> DNA::crossover(DNA& dnaA, DNA& dnaB)
 {
-	DNA* dna1 = new DNA();
-	DNA* dna2 = new DNA();
+	DNA* dna1 = dnaA.copy();
+	DNA* dna2 = dnaB.copy();
 
-	DNAJson dnaBuffer1 = dnaA.toJson();
-	DNAJson dnaBuffer2 = dnaB.toJson();
+	NN* nnA = dnaA.getNN();
+	NN* nnB = dnaB.getNN();
 
-	DNAJson dnaBufferA = dnaA.toJson();
-	DNAJson dnaBufferB = dnaB.toJson();
+	NN* nn1 = dna1->getNN();
+	NN* nn2 = dna2->getNN();
 
-	dnaBuffer1.m_NNJson.mInputWeights = dnaBufferB.m_NNJson.mInputWeights;
-	dnaBuffer1.m_NNJson.mBiasHidden = dnaBufferB.m_NNJson.mBiasHidden;
+	//nn1->setWeightsHO(nnA->getWeightsHO());
+	//nn1->setWeightsIH(nnB->getWeightsIH());
 
-	//dnaBuffer1.m_NNJson.mHiddenWeights = dnaBufferA.m_NNJson.mHiddenWeights;
-	//dnaBuffer1.m_NNJson.mBiasOutput = dnaBufferB.m_NNJson.mBiasOutput;
+	//nn1->setBiasH(nnB->getBiasH());
+	//nn1->setBiasO(nnB->getBiasO());
 
-	dnaBuffer2.m_NNJson.mInputWeights = dnaBufferB.m_NNJson.mInputWeights;
-	dnaBuffer2.m_NNJson.mBiasHidden = dnaBufferB.m_NNJson.mBiasHidden;
+	//nn2->setWeightsHO(nnB->getWeightsHO());
+	//nn2->setWeightsIH(nnA->getWeightsIH());
 
-	//dnaBuffer2.m_NNJson.mHiddenWeights = dnaBufferB.m_NNJson.mHiddenWeights;
-	//dnaBuffer2.m_NNJson.mBiasOutput = dnaBufferA.m_NNJson.mBiasOutput;
+	//nn2->setBiasH(nnA->getBiasH());
+	//nn2->setBiasO(nnA->getBiasO());
 
-	dna1->fromJson(dnaBuffer1);
-	dna2->fromJson(dnaBuffer2);
+	nn1->setWeights(nnB->getWeights());
+	nn2->setWeights(nnA->getWeights());
+	//nn2->setBiases(nnA->getBiases());
+
+	dna1->setNN(nn1);
+	dna2->setNN(nn2);
 
 	return std::make_tuple(dna1, dna2);
 }
-
-//bool DNA::isGreaterThan(DNA& dna)
-//{
-//	if (m_iScore == dna.m_iScore)
-//	{
-//		if (m_iKills == dna.m_iKills)
-//			return m_duration > dna.m_duration;
-//		else
-//			return m_iKills > dna.m_iKills;
-//	}
-//	return m_iScore > dna.m_iScore;
-//}
-//
-//bool DNA::isEqualTo(DNA& dna)
-//{
-//	if (m_genes.size() != dna.m_genes.size())
-//		return false;
-//
-//	for (int i = 0; i < m_genes.size(); i++)
-//	{
-//		if (m_genes[i]->m_towerType != dna.m_genes[i]->m_towerType)
-//			return false;
-//		if (m_genes[i]->m_towerPosition != dna.m_genes[i]->m_towerPosition)
-//			return false;
-//	}
-//
-//	return m_iScore == dna.m_iScore && m_iKills == dna.m_iKills && m_duration == dna.m_duration;
-//}
-//
-//void DNA::fillGenes()
-//{
-//	for (int i = 0; i < GENES_PER_DNA; i++)
-//		m_genes.push_back(getUniqueGene());
-//}
-//
-//bool DNA::nextGene()
-//{
-//	m_index++;
-//	if (m_index >= m_genes.size())
-//	{
-//		m_index = 0;
-//		return true;
-//	}
-//
-//	return false;
-//}
 
 DNAJson DNA::toJson()
 {
@@ -172,44 +136,19 @@ DNAJson DNA::toJson()
 
 void DNA::fromJson(DNAJson& json)
 {
-	m_pNn->fromJson(json.m_NNJson);
-
 	m_iInputCount = json.m_iInputCount;
 	m_iHiddenCount = json.m_iHiddenCount;
 	m_iOutputCount = json.m_iOutputCount;
+	
+	m_pNn = new NN(
+		json.m_iInputCount,
+		json.m_iHiddenCount,
+		json.m_iOutputCount
+	);
+	m_pNn->fromJson(json.m_NNJson);
 
 	m_iScore = json.m_iScore;
 }
-
-//Gene* DNA::getUniqueGene()
-//{
-//	Gene* newGene = new Gene();
-//	bool isUnique = false;
-//
-//	while (isUnique == false)
-//	{
-//		// set flag
-//		isUnique = true;
-//
-//		// for each gene
-//		for (Gene* gene : m_genes)
-//		{
-//			// check for dupicates
-//			if (gene->m_towerPosition == newGene->m_towerPosition)
-//			{
-//				// if duplicated, set flag
-//				isUnique = false;
-//				break;
-//			}
-//		}
-//
-//		// if duplicated flag was set, get new position
-//		if (!isUnique)
-//			newGene = new Gene();
-//	}
-//
-//	return newGene;
-//}
 
 void DNA::DebugReport()
 {

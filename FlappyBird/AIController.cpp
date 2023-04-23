@@ -29,7 +29,7 @@ AIController::AIController()
 	// outputs
 	// 1. output >= 0.5 flap, output < 0.5 don't flap
 	//m_pBrain = new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT);
-	m_vecDnaGenes = std::vector<DnaGene*>();
+	m_vecTrainingData = std::vector<TrainingData>();
 	m_pGAM = new GAM();
 }					  
 
@@ -41,6 +41,7 @@ AIController::~AIController()
 void AIController::initBirds(GameDataRef data)
 {
 	GeneData gene = GeneData(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT, data);
+	m_pBrain = new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT);
 	m_pGAM->addToPopulation(gene, BIRD_COUNT);
 }
 
@@ -82,6 +83,8 @@ void AIController::handleInput()
 		};
 
 		birdBrain->getGuess(inputs, INPUT_COUNT);
+
+		m_vecTrainingData.push_back(TrainingData(inputs));
 
 		//NN* nn = birdBrain->getGuess();
 		//double* score = nn->feedForward(inputs, INPUT_COUNT);
@@ -144,11 +147,22 @@ void AIController::handleInput()
 
 void AIController::gameOver(float dt)
 {
-	// calculate the score for each bird
-	//for (DnaGene* birdBrain : m_vecDnaGenes)
-	//	std::cout << "\nscore: " << birdBrain->iScore << "\n";
+	m_pBrain = m_pGAM->getBrainToTrain();
+	if (m_pBrain != nullptr)
+	{
+		for (TrainingData data : m_vecTrainingData)
+		{
+			m_pBrain->trainFeedForward(
+				data.dInputs, INPUT_COUNT,
+				data.dOutputs, OUTPUT_COUNT
+			);
+		}
+		m_pGAM->addTrainedBrain(m_pBrain);
+	}
 
-	std::cout << "\next generation\n";
+	m_pGAM->nextGeneration();
+
+	std::cout << "\nnext generation\n";
 }
 
 float AIController::distanceToFloor(Land* land, Bird* bird)

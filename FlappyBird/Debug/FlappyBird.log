@@ -1,3 +1,18 @@
-﻿  DNA.cpp
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\DNA.h(52,15): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+﻿  AIController.cpp
+  DNA.cpp
+  GAM.cpp
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\GAM.cpp(8,17): warning C4244: 'argument': conversion from '_Rep' to 'unsigned int', possible loss of data
+          with
+          [
+              _Rep=std::chrono::system_clock::rep
+          ]
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\GAM.cpp(130,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\GAM.cpp(171,13): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\GAM.cpp(184,20): warning C4018: '<': signed/unsigned mismatch
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\GAM.cpp(246,20): warning C4018: '<': signed/unsigned mismatch
+  GameState.cpp
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\GameState.cpp(12,1): warning C4005: 'BIRD_COUNT': macro redefinition
+D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\AIController.h(8,1): message : see previous definition of 'BIRD_COUNT'
+  NN.cpp
+  Generating Code...
   FlappyBird.vcxproj -> D:\GitHub\AI Course\FlappyBird_NN\Debug\FlappyBird.exe

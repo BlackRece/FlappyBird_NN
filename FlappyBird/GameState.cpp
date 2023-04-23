@@ -54,6 +54,7 @@ namespace Sonar
 		pipe = new Pipe(_data);
 		land = new Land(_data);
 		bird = new Bird(_data);
+
 		m_pAIController->initBirds(_data);
 		
 		flash = new Flash(_data);
@@ -139,8 +140,9 @@ namespace Sonar
 				clock.restart();
 			}
 
-			for (Bird* bird : vecBirds)
-				bird->Update(dt);
+			m_pAIController->update(dt);
+			/*for (Bird* bird : vecBirds)
+				bird->Update(dt);*/
 
 			//std::vector<Bird*> vecBirds = m_pAIController->getBirds();
 			std::vector<DNA*> vecBirdBrains = m_pAIController->getDna();
@@ -183,7 +185,7 @@ namespace Sonar
 
 				clock.restart();
 
-				_hitSound.play();
+				//_hitSound.play();
 			}
 
 			if (GameStates::ePlaying == _gameState)
@@ -216,7 +218,7 @@ namespace Sonar
 
 							scoringSprites.erase(scoringSprites.begin() + i);
 
-							_pointSound.play();
+							//_pointSound.play();
 						}
 					}
 				}
@@ -225,13 +227,15 @@ namespace Sonar
 
 		if (GameStates::eGameOver == _gameState)
 		{
-			m_pAIController->gameOver(dt);
 
-			flash->Show(dt);
+			//flash->Show(dt);
 
-			if (clock.getElapsedTime().asSeconds() > TIME_BEFORE_GAME_OVER_APPEARS)
+			//if (clock.getElapsedTime().asSeconds() > TIME_BEFORE_GAME_OVER_APPEARS)
 			{
-				this->_data->machine.AddState(StateRef(new GameOverState(_data, _score)), true);
+				m_pAIController->gameOver(dt);
+				
+				//this->_data->machine.AddState(StateRef(new GameOverState(_data, _score)), true);
+				this->_data->machine.AddState(StateRef(new GameState(_data)), true);
 			}
 		}
 	}

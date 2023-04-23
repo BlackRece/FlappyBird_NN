@@ -23,42 +23,42 @@ public:
 	double  operator() (unsigned iRows, unsigned iCols) const;
 
 	// math functions
-	inline Matrix operator+(const double& dScalar) { return add(dScalar); }
-	inline Matrix operator+(const Matrix& mMatrix) { return add(mMatrix); }
-	inline Matrix operator-(const double& dScalar) { return sub(dScalar); }
-	inline Matrix operator-(const Matrix& mMatrix) { return sub(mMatrix); }
-	inline Matrix operator*(const double& dScalar) { return mul(dScalar); }
-	inline Matrix operator*(const Matrix& mMatrix) { return mul(mMatrix); }
-	inline Matrix operator/(const double& dScalar) { return div(dScalar); }
-	inline Matrix operator/(const Matrix& mMatrix) { return div(mMatrix); }
+	Matrix* operator+(const double& dScalar) { return add(dScalar); }
+	Matrix* operator+(const Matrix& mMatrix) { return add(mMatrix); }
+	Matrix* operator-(const double& dScalar) { return sub(dScalar); }
+	Matrix* operator-(const Matrix& mMatrix) { return sub(mMatrix); }
+	Matrix* operator*(const double& dScalar) { return mul(dScalar); }
+	Matrix* operator*(const Matrix& mMatrix) { return mul(mMatrix); }
+	Matrix* operator/(const double& dScalar) { return div(dScalar); }
+	Matrix* operator/(const Matrix& mMatrix) { return div(mMatrix); }
 
-	Matrix add(const double dScalar);
-	Matrix sub(const double dScalar);
-	Matrix mul(const double dScalar);
-	Matrix div(const double dScalar);
+	Matrix* add(const double dScalar);
+	Matrix* sub(const double dScalar);
+	Matrix* mul(const double dScalar);
+	Matrix* div(const double dScalar);
 
-	Matrix add(const Matrix& mSource);
-	Matrix sub(const Matrix& mSource);
-	Matrix mul(const Matrix& mSource);
-	Matrix div(const Matrix& mSource);
+	Matrix* add(const Matrix& mSource);
+	Matrix* sub(const Matrix& mSource);
+	Matrix* mul(const Matrix& mSource);
+	Matrix* div(const Matrix& mSource);
 
-	Matrix dot(const Matrix& mSource);
+	Matrix* dot(const Matrix& mSource);
 
 	// manipulation functions
-	Matrix transpose() const;
+	Matrix* transpose() const;
 
 	/// <summary>
 	/// take the value at each index and apply the function to it, reutrn a new matrix
 	/// </summary>
-	Matrix map(const std::function<double(int, int, double)>& func);
-	Matrix map(std::function<double(double)>& func);
-	Matrix map(std::function<double()>& func);
+	Matrix* map(const std::function<double(int, int, double)>& func);
+	Matrix* map(std::function<double(double)>& func);
+	Matrix* map(std::function<double()>& func);
 
 	// helper functions
 	double* toArray() const;
-	Matrix fromArray(const double dArray[], const int iArraySize, bool bIsCol = true);
+	Matrix* fromArray(const double dArray[], const int iArraySize, bool bIsCol = true);
 	MatrixJson toJson() const;
-	Matrix fromJson(MatrixJson json) const;
+	Matrix* fromJson(MatrixJson json) const;
 
 	// debug functions
 	void print() const;

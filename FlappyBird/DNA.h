@@ -40,49 +40,32 @@ public:
 	~DNA();
 
 	Sonar::Bird* getBird() { return m_pBird; }
+	void setBird(Sonar::Bird* bird) { m_pBird = bird; }
+
 	void getGuess(double* dInputs, int iInputCount);
 
 	void update(float dt);
 
-	//static DNA* setHigh();
 	static std::tuple<DNA*, DNA*> crossover(DNA& dnaA, DNA& dnaB);
 
-	float fitness()
-	{
-		float score = m_iScore - 40;
-		float fraction = score / 200;
-		float percent = fraction * 100;
-		return percent;
-	}
 	int getScore() { return m_iScore; }
 
 	void onHit(Hit eHit);
 	bool isDead() { return m_bIsDead; }
 	
-	//inline void resetIndex() { m_index = 0; }
-
 	DNA* copy();
-	//bool isGreaterThan(DNA& dna);
-	//inline bool isLesserThan(DNA& dna) { return !isGreaterThan(dna); }
-	//bool isEqualTo(DNA& dna);
-
-	//void fillGenes();
-	//inline Gene& getGene() { return *m_genes[m_index]; }
-	//bool nextGene();
 	void mutate(float fPercent) { m_pNn->mutate((double)fPercent); }
-	//Gene* getUniqueGene();
+	void reset();
 
 	DNAJson toJson();
 	void fromJson(DNAJson& json);
 
 	void DebugReport();
 
-	//std::vector<Gene*> m_genes;
-	//int m_iKills;
-	//int m_duration;
+	void setNN(NN* nn) { m_pNn = nn; }
+	NN* getNN() { return m_pNn; }
 
 private:
-	void setNN(NN nn) { m_pNn = &nn; }
 	void setBird(Sonar::Bird bird) { m_pBird = &bird; }
 
 	int				m_iInputCount;
@@ -91,10 +74,10 @@ private:
 	NN*				m_pNn;
 	double*			m_fPrediction;
 	
-	GeneData*		m_pGeneData;
-	Sonar::Bird*	m_pBird;
-	bool			m_bIsDead;
-	int				m_iScore;
+	Sonar::GameDataRef		m_data;
+	Sonar::Bird*			m_pBird;
+	bool					m_bIsDead;
+	int						m_iScore;
 };
 
 #endif // !DNA_H

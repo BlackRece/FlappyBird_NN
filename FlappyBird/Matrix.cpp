@@ -19,94 +19,94 @@ double Matrix::operator()(unsigned iRows, unsigned iCols) const
 	return m_dData[m_iCols * iRows + iCols];
 }
 
-Matrix Matrix::add(const double dScalar)
+Matrix* Matrix::add(const double dScalar)
 {
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] + dScalar;
+		m->m_dData[i] = m_dData[i] + dScalar;
 	return m;
 }
 
-Matrix Matrix::sub(const double dScalar)
+Matrix* Matrix::sub(const double dScalar)
 {
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] - dScalar;
+		m->m_dData[i] = m_dData[i] - dScalar;
 	return m;
 }
 
-Matrix Matrix::mul(const double dScalar)
+Matrix* Matrix::mul(const double dScalar)
 {
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] * dScalar;
+		m->m_dData[i] = m_dData[i] * dScalar;
 	return m;
 }
 
-Matrix Matrix::div(const double dScalar)
+Matrix* Matrix::div(const double dScalar)
 {
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] / dScalar;
+		m->m_dData[i] = m_dData[i] / dScalar;
 	return m;
 }
 
-Matrix Matrix::add(const Matrix& mSource)
-{
-	checkSize(m_iRows, mSource.m_iRows);
-	checkSize(m_iCols, mSource.m_iCols);
-	Matrix m(m_iRows, m_iCols);
-	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] + mSource.m_dData[i];
-	return m;
-}
-
-Matrix Matrix::sub(const Matrix& mSource)
+Matrix* Matrix::add(const Matrix& mSource)
 {
 	checkSize(m_iRows, mSource.m_iRows);
 	checkSize(m_iCols, mSource.m_iCols);
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] - mSource.m_dData[i];
+		m->m_dData[i] = m_dData[i] + mSource.m_dData[i];
+	return m;
+}
+
+Matrix* Matrix::sub(const Matrix& mSource)
+{
+	checkSize(m_iRows, mSource.m_iRows);
+	checkSize(m_iCols, mSource.m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
+	for (int i = 0; i < m_iRows * m_iCols; i++)
+		m->m_dData[i] = m_dData[i] - mSource.m_dData[i];
 	return m;
 }
 
 
-Matrix Matrix::mul(const Matrix& mSource)
+Matrix* Matrix::mul(const Matrix& mSource)
 {
 	checkSize(m_iRows, mSource.m_iRows);
 	checkSize(m_iCols, mSource.m_iCols);
 	// element-wise multiplication
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] * mSource.m_dData[i];
+		m->m_dData[i] = m_dData[i] * mSource.m_dData[i];
 	return m;
 }
 
-Matrix Matrix::div(const Matrix& mSource)
+Matrix* Matrix::div(const Matrix& mSource)
 {
 	checkSize(m_iRows, mSource.m_iRows);
 	checkSize(m_iCols, mSource.m_iCols);
 	// element-wise division
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows * m_iCols; i++)
-		m.m_dData[i] = m_dData[i] / mSource.m_dData[i];
+		m->m_dData[i] = m_dData[i] / mSource.m_dData[i];
 	return m;
 }
 
-Matrix Matrix::dot(const Matrix& mSource)
+Matrix* Matrix::dot(const Matrix& mSource)
 {
 	// matrix multiplication
 	if (m_iCols != mSource.m_iRows)
 	{
 		throw std::invalid_argument("Matrix sizes do not match");
-		Matrix errorMatrix(1, 1);
+		Matrix* errorMatrix = new Matrix(1, 1);
 		return errorMatrix;
 	}
-	Matrix m(m_iRows, mSource.m_iCols);
-	for (int i = 0; i < m.m_iRows; i++)
-		for (int j = 0; j < m.m_iCols; j++)
-			m(i, j) = (getRow(i) * mSource.getCol(j)).sum();
+	Matrix* m = new Matrix(m_iRows, mSource.m_iCols);
+	for (int i = 0; i < m->m_iRows; i++)
+		for (int j = 0; j < m->m_iCols; j++)
+			(*m)(i, j) = (getRow(i) * mSource.getCol(j)).sum();
 
 	/*
 	for (int i = 0; i < m_iRows; i++)
@@ -117,57 +117,57 @@ Matrix Matrix::dot(const Matrix& mSource)
 	return m;
 }
 
-Matrix Matrix::transpose() const
+Matrix* Matrix::transpose() const
 {
-	Matrix m(m_iCols, m_iRows);
+	Matrix* m = new Matrix(m_iCols, m_iRows);
 	for (int i = 0; i < m_iRows; i++)
 		for (int j = 0; j < m_iCols; j++)
-			m(j, i) = (*this)(i, j);
+			(*m)(j, i) = (*this)(i, j);
 	return m;
 }
 
-Matrix Matrix::map(const std::function<double(int, int, double)>& func)
+Matrix* Matrix::map(const std::function<double(int, int, double)>& func)
 {
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows; i++)
 		for (int j = 0; j < m_iCols; j++)
-			m(i, j) = func(i, j, (*this)(i, j));
+			(*m)(i, j) = func(i, j, (*this)(i, j));
 	return m;
 }
 
-Matrix Matrix::map(std::function<double(double)>& func)
+Matrix* Matrix::map(std::function<double(double)>& func)
 {
-	Matrix m(m_iRows, m_iCols);
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows; i++)
 		for (int j = 0; j < m_iCols; j++)
-			m(i, j) = func((*this)(i, j));
+			(*m)(i, j) = func((*this)(i, j));
 	return m;
 }
 
-Matrix Matrix::map(std::function<double()>& func) {
-	Matrix m(m_iRows, m_iCols);
+Matrix* Matrix::map(std::function<double()>& func) {
+	Matrix* m = new Matrix(m_iRows, m_iCols);
 	for (int i = 0; i < m_iRows; i++) {
 		for (int j = 0; j < m_iCols; j++) {
-			m(i, j) = func();
+			(*m)(i, j) = func();
 		}
 	}
 	return m;
 }
 
-Matrix Matrix::fromArray(const double dArray[], const int iArraySize, bool bIsCol)
+Matrix* Matrix::fromArray(const double dArray[], const int iArraySize, bool bIsCol)
 {
 	// NOTE: bIsCol is true if the array is a column vector
 	// NOTE: Matrix(ROW, COL)
-	Matrix m = bIsCol
-		? Matrix(iArraySize, 1)
-		: Matrix(1, iArraySize);
+	Matrix* m = bIsCol
+		? new Matrix(iArraySize, 1)
+		: new Matrix(1, iArraySize);
 
 	for (int i = 0; i < iArraySize; i++)
 	{
 		if (bIsCol)
-			m(i, 0) = dArray[i];
+			(*m)(i, 0) = dArray[i];
 		else
-			m(0, i) = dArray[i];
+			(*m)(0, i) = dArray[i];
 	}
 
 	return m;
@@ -194,11 +194,11 @@ MatrixJson Matrix::toJson() const
 	return json;
 }
 
-Matrix Matrix::fromJson(MatrixJson json) const
+Matrix* Matrix::fromJson(MatrixJson json) const
 {
-	Matrix m(json.iRows, json.iCols);
+	Matrix* m = new Matrix(json.iRows, json.iCols);
 	for (int i = 0; i < json.vData.size(); i++)
-		m.m_dData[i] = json.vData[i];
+		m->m_dData[i] = json.vData[i];
 	return m;
 }
 

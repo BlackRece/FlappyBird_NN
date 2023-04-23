@@ -47,8 +47,27 @@ public:
 	NNJson load(const std::string sFileName);
 
 	// genetic algorithm functions
-	NN clone() { return NN(*this); }
+	NN* clone() { return new NN(*this); }
 	void mutate(double dRate);
+	Matrix* getWeightsIH() { return m_mWeightsIH; }
+	Matrix* getWeightsHO() { return m_mWeightsHO; }
+	Matrix* getBiasH() { return m_mBiasH; }
+	Matrix* getBiasO() { return m_mBiasO; }
+
+	void setWeightsIH(Matrix* mWeightsIH) { m_mWeightsIH = mWeightsIH; }
+	void setWeightsHO(Matrix* mWeightsHO) { m_mWeightsHO = mWeightsHO; }
+	void setBiasH(Matrix* mBiasH) { m_mBiasH = mBiasH; }
+	void setBiasO(Matrix* mBiasO) { m_mBiasO = mBiasO; }
+
+	std::vector<Matrix*> getWeights() { return { m_mWeightsIH, m_mWeightsHO }; }
+	void setWeights(std::vector<Matrix*> vWeights) 
+		{ m_mWeightsIH = vWeights[0]; m_mWeightsHO = vWeights[1]; }
+
+	std::vector<Matrix*> getBiases() { return { m_mBiasH, m_mBiasO }; }
+	void setBiases(std::vector<Matrix*> vBiases) 
+		{ m_mBiasH = vBiases[0]; m_mBiasO = vBiases[1]; }
+
+	void crossWeights(NN& nn);
 
 private:
 	double m_dLearningRate;
@@ -56,15 +75,15 @@ private:
 	int m_iHiddenCount;
 	int m_iOutputCount;
 
-	Matrix m_mInput;
-	Matrix m_mHidden;
-	Matrix m_mOutput;
+	Matrix* m_mInput;
+	Matrix* m_mHidden;
+	Matrix* m_mOutput;
 
-	Matrix m_mWeightsIH;
-	Matrix m_mWeightsHO;
+	Matrix* m_mWeightsIH;
+	Matrix* m_mWeightsHO;
 
-	Matrix m_mBiasH;
-	Matrix m_mBiasO;
+	Matrix* m_mBiasH;
+	Matrix* m_mBiasO;
 
 	std::function<double()> m_fnRandom = std::bind(&NN::random, this, -1.0, 1.0);
 	std::function<double(double)> m_fnSigmoid = std::bind(&NN::sigmoid, this, std::placeholders::_1);
