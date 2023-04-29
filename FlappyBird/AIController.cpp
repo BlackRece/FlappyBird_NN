@@ -12,10 +12,7 @@ using namespace std;
 
 AIController::AIController()
 {
-	m_pGameState = nullptr;
-	m_bShouldFlap = false;
-
-	//m_mapBirds = std::map<Bird*, NN*>();
+	// NOTES:
 	// inputs
 	// 1. distance to floor
 	// 2. distance to nearest pipe
@@ -28,7 +25,9 @@ AIController::AIController()
 	// 
 	// outputs
 	// 1. output >= 0.5 flap, output < 0.5 don't flap
-	//m_pBrain = new NN(INPUT_COUNT, HIDDEN_COUNT, OUTPUT_COUNT);
+	
+	m_pGameState = nullptr;
+	m_bShouldFlap = false;
 	m_vecTrainingData = std::vector<TrainingData>();
 	m_pGAM = new GAM();
 }					  
@@ -59,7 +58,6 @@ void AIController::handleInput()
 
 	Pipe* pipe = m_pGameState->GetPipeContainer();
 	Land* land = m_pGameState->GetLandContainer();
-	//Bird* bird = m_pGameState->GetBird();
 	
 	for (DNA* birdBrain : m_pGAM->getChromos())
 	{
@@ -85,44 +83,7 @@ void AIController::handleInput()
 		birdBrain->getGuess(inputs, INPUT_COUNT);
 
 		m_vecTrainingData.push_back(TrainingData(inputs));
-
-		//NN* nn = birdBrain->getGuess();
-		//double* score = nn->feedForward(inputs, INPUT_COUNT);
-		//if(score[0] >= 0.5)
-		//	birdBrain->bShouldFlap = true;
 	}
-
-
-	//double* score = m_pBrain->feedForward(inputs, INPUT_COUNT);
-	//if(score[0] >= 0.5)
-	//	m_bShouldFlap = true;
-
-	//std::vector<Bird*> vecBirds = m_pGameState->GetBirds();
-
-	//// do some AI stuff, decide whether to flap
-	//for (Bird* bird : vecBirds)
-	//{
-	//	// get the distance to the floor
-	//	float fDistanceToFloor = distanceToFloor(land, bird);
-	//
-	//	// get the distance to the nearest pipe
-	//	float fDistanceToNearestPipe = distanceToNearestPipes(pipe, bird);
-	//
-	//	// if there is a pipe
-	//	if (fDistanceToNearestPipe != ERROR_DISTANCE) {
-	//		// get the distance to the centre of the gap
-	//		float fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, bird);
-	//		fDistanceToCentreOfGap = fDistanceToCentreOfGap;	// <-- whats this for?!
-	//
-	//		// if the bird is above the centre of the gap, flap
-	//		if (bird->GetSprite().getPosition().y < fDistanceToCentreOfGap)
-	//			m_bShouldFlap = true;
-	//	}
-	//}
-	
-	
-	// this means the birdie always flaps. Should only be called when the bird should need to flap. 
-	//m_bShouldFlap = true;
 
 	return;
 }
