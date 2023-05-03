@@ -29,7 +29,7 @@ void GAM::addToPopulation(GeneData gData, int dnaCount)
 		for (int i = 0; i < dnaCount; i++)
 		{
 			if(m_vecChromos[i])
-			m_vecChromos[i]->setBird(new Sonar::Bird(gData.gdrData));
+				m_vecChromos[i]->setBird(new Sonar::Bird(gData.gdrData));
 		}
 	}
 }
@@ -118,7 +118,8 @@ DNA* GAM::findBestDNA(std::vector<DNA*> vecSource)
 	for (DNA* dna : vecSource)
 	{
 		if(bestDNA->getScore() < dna->getScore())
-			bestDNA = dna->copy();
+			bestDNA = dna;
+			//bestDNA = dna->copy();
 	}
 
 	return bestDNA;
@@ -212,17 +213,14 @@ void GAM::loadChromosFromJson()
 	JsonParser::LoadJson(vecChromosJson, STORED_DNA_FILE_NAME);
 
 	// convert json to dna
-	std::vector<DNA*> vecChromos;
 	for (DNAJson dnaJson : vecChromosJson)
 	{
 		DNA* dna = new DNA();
 		dna->fromJson(dnaJson);
 		dna->reset();
-		vecChromos.push_back(dna);
-	}
 
-	// set chromos
-	m_vecChromos = vecChromos;
+		m_vecChromos.push_back(dna);
+	}
 }
 
 void GAM::saveChromosToJson()

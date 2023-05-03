@@ -26,7 +26,7 @@ AIController::AIController()
 	// outputs
 	// 1. output >= 0.5 flap, output < 0.5 don't flap
 	
-	m_pGameState = nullptr;
+	//m_pGameState = nullptr;
 	m_bShouldFlap = false;
 	m_vecTrainingData = std::vector<TrainingData>();
 	m_pGAM = new GAM();
@@ -34,7 +34,8 @@ AIController::AIController()
 
 AIController::~AIController()
 {
-
+	delete m_pGAM;
+	delete m_pBrain;
 }
 
 void AIController::initBirds(GameDataRef data)
@@ -51,16 +52,28 @@ std::vector<Bird*> AIController::getBirds()
 
 // update - the AI method which determines whether the bird should flap or not. 
 // set m_bShouldFlap to true or false.
-void AIController::handleInput()
+void AIController::handleInput(GameState* pGameState)
 {
-	if (m_pGameState == nullptr)
+	if (pGameState == nullptr)
 		return;
 
-	Pipe* pipe = m_pGameState->GetPipeContainer();
-	Land* land = m_pGameState->GetLandContainer();
+	Pipe* pipe = pGameState->GetPipeContainer();
+	Land* land = pGameState->GetLandContainer();
 	
+	/*int brainCount = 0;
+	auto chromos = m_pGAM->getChromos();
+	for (int i = 0; i < chromos.size(); i++)
+	{
+		auto tmpNN = chromos[i]->getNN();
+		auto tmpMatrix = tmpNN->getWeightsIH();
+
+		if(tmpMatrix->getRowsCount() != HIDDEN_COUNT)
+			brainCount++;
+	}*/
+
 	for (DNA* birdBrain : m_pGAM->getChromos())
 	{
+
 		Bird* bird = birdBrain->getBird();
 
 		float fDistanceToFloor = distanceToFloor(land, bird);
@@ -108,13 +121,14 @@ void AIController::handleInput()
 
 void AIController::gameOver(float dt)
 {
-	DNA* bestBird = m_pGAM->getBirdToTrain()->copy();
+	DNA* bestBird = m_pGAM->getBirdToTrain();// ->copy();
 	
 	NN* birdBrain = bestBird->getNN();
 	if (birdBrain != nullptr)
+	{
+		delete m_pBrain;
 		m_pBrain = birdBrain;
-	else
-		m_pBrain = m_pBrain;
+	}
 	
 	if (m_pBrain != nullptr)
 	{
@@ -131,6 +145,7 @@ void AIController::gameOver(float dt)
 
 	m_pGAM->nextGeneration(bestBird);
 
+	m_vecTrainingData.clear();
 	std::cout << "\nnext generation\n";
 }
 

@@ -149,3 +149,8 @@ void DNA::DebugReport()
 	std::cout
 		<< "\n\tScore: " << m_iScore;
 }
+
+NN* DNA::getNN() 
+{ 
+	return m_pNn; 
+}

@@ -13,39 +13,47 @@ class Matrix
 {
 public:
 	Matrix() : m_iRows(1), m_iCols(1), m_dData(std::valarray<double>(1)) { ; }
-	inline Matrix(unsigned iRows, unsigned iCols);
+	Matrix(unsigned int iRows, unsigned int iCols);
 	Matrix(const Matrix& m);               // Copy constructor
-	~Matrix() { ; }
+	~Matrix();
 
 	//Matrix& operator= (const Matrix& m);   // Assignment operator
 
-	double& operator() (unsigned iRows, unsigned iCols);
-	double  operator() (unsigned iRows, unsigned iCols) const;
+	double& operator() (unsigned int iRows, unsigned int iCols);
+	double  operator() (unsigned int iRows, unsigned int iCols) const;
 
-	// math functions
-	Matrix* operator+(const double& dScalar) { return add(dScalar); }
-	Matrix* operator+(const Matrix& mMatrix) { return add(mMatrix); }
-	Matrix* operator-(const double& dScalar) { return sub(dScalar); }
-	Matrix* operator-(const Matrix& mMatrix) { return sub(mMatrix); }
-	Matrix* operator*(const double& dScalar) { return mul(dScalar); }
-	Matrix* operator*(const Matrix& mMatrix) { return mul(mMatrix); }
-	Matrix* operator/(const double& dScalar) { return div(dScalar); }
-	Matrix* operator/(const Matrix& mMatrix) { return div(mMatrix); }
+	// BUG: methods returning a pointer are not being freed
+	// TODO: create static methods that return a pointer to a new matrix
+	// TODO: change member methods that return a pointer to a new matrix, sp that they operate and return a reference to the current matrix
+	// TODO: ensure the usages of Matrix methods are used accordingly
 
-	Matrix* add(const double dScalar);
-	Matrix* sub(const double dScalar);
-	Matrix* mul(const double dScalar);
-	Matrix* div(const double dScalar);
+	// static scalar functions
+	static Matrix* add(const Matrix& m1, const double dScalar);
+	static Matrix* sub(const Matrix& m1, const double dScalar);
+	static Matrix* mul(const Matrix& m1, const double dScalar);
+	static Matrix* div(const Matrix& m1, const double dScalar);
 
-	Matrix* add(const Matrix& mSource);
-	Matrix* sub(const Matrix& mSource);
-	Matrix* mul(const Matrix& mSource);
-	Matrix* div(const Matrix& mSource);
+	// static matrix functions
+	static Matrix* add(const Matrix& m1, const Matrix& m2);
+	static Matrix* sub(const Matrix& m1, const Matrix& m2);
+	static Matrix* mul(const Matrix& m1, const Matrix& m2);
+	static Matrix* div(const Matrix& m1, const Matrix& m2);
 
-	Matrix* dot(const Matrix& mSource);
+	// member scalar functions
+	void add(const double dScalar);
+	void sub(const double dScalar);
+	void mul(const double dScalar);
+	void div(const double dScalar);
+
+	// member matrix functions
+	void add(const Matrix& m);
+	void sub(const Matrix& m);
+	void mul(const Matrix& m);
+	void div(const Matrix& m);
 
 	// manipulation functions
-	Matrix* transpose() const;
+	static Matrix* dot(const Matrix& m1, const Matrix& m2);
+	static Matrix* transpose(const Matrix& mSource);
 
 	/// <summary>
 	/// take the value at each index and apply the function to it, reutrn a new matrix
@@ -56,15 +64,21 @@ public:
 
 	// helper functions
 	double* toArray() const;
-	Matrix* fromArray(const double dArray[], const int iArraySize, bool bIsCol = true);
+	static Matrix* fromArray(const double dArray[], const int iArraySize, bool bIsCol = true);
+
+	// json functions
 	MatrixJson toJson() const;
-	Matrix* fromJson(MatrixJson json) const;
+	static Matrix* fromJson(MatrixJson& json);
 
 	// debug functions
 	void print() const;
 	void random(int dVal = 10);
-	void showRow(unsigned iRow) const;
-	void showCol(unsigned iCol) const;
+	void showRow(unsigned int iRow) const;
+	void showCol(unsigned int iCol) const;
+
+	// getters
+	inline unsigned int getRowsCount() const { return m_iRows; }
+	inline unsigned int getColCount() const { return m_iCols; }
 
 private:
 	unsigned m_iRows;
@@ -72,12 +86,15 @@ private:
 
 	std::valarray<double> m_dData;
 
-	inline void checkSize(unsigned iRows, unsigned iCols) const;
-	inline void checkSize(Matrix mMatrix) const;
-	inline void checkBounds(unsigned iRows, unsigned iCols) const;
+	inline void checkBounds(const unsigned int iRows, const unsigned int iCols) const;
+	inline void isSameSize(Matrix mMatrix);
+	inline void isMatchingSize(const unsigned int lhs, const unsigned int rhs);
 
-	std::valarray<double> getRow(unsigned iRow) const;
-	std::valarray<double> getCol(unsigned iCol) const;
+	inline static void isZeroSize(const unsigned int iRows, const unsigned int iCols);
+	inline static void isSameSize(const Matrix& mMatrix1, const Matrix& mMatrix2);
+
+	std::valarray<double> getRow(unsigned int iRow) const;
+	std::valarray<double> getCol(unsigned int iCol) const;
 };
 
 #endif // !MATRIX_H

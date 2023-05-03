@@ -60,15 +60,16 @@ double* NN::feedForward(const double dInputs[], const int iInputCount)
 	m_mInput = m_mInput->fromArray(dInputs, iInputCount, bIsColumnVector);
 
 	// apply weights and biases to input
-	m_mHidden = m_mWeightsIH->dot(*m_mInput);
-	m_mHidden = m_mHidden->add(*m_mBiasH);
+	// if m_mWeightsIH = 3x2 and m_mInput = 2x1, then m_mHidden = 3x1
+	m_mHidden = Matrix::dot(*m_mWeightsIH, *m_mInput);
+	m_mHidden->add(*m_mBiasH);
 
 	// apply activation function
 	m_mHidden = m_mHidden->map(m_fnSigmoid);
 
 	// apply weights and biases to hidden layer
-	m_mOutput = m_mWeightsHO->dot(*m_mHidden);
-	m_mOutput = m_mOutput->add(*m_mBiasO);
+	m_mOutput = Matrix::dot(*m_mWeightsHO, *m_mHidden);
+	m_mOutput->add(*m_mBiasO);
 
 	// apply activation function
 	m_mOutput = m_mOutput->map(m_fnSigmoid);
@@ -89,44 +90,43 @@ void NN::trainFeedForward(const double dInputs[], const int iInputCount, const d
 	mTargets = mTargets->fromArray(dTargets, iTargetCount);
 
 	// calculate output errors
-	Matrix* mOutputErrors = mTargets->sub(*mOutputs);
+	Matrix* mOutputErrors = Matrix::sub(*mTargets, *mOutputs);
 
 	// calculate hidden-output gradients via gradient descent
 	Matrix* mOutputGradients = mOutputs->map(m_fnSigmoidDerivative);
-	mOutputGradients = mOutputGradients->mul(*mOutputErrors);
+	mOutputGradients->mul(*mOutputErrors);
 
 	double dLearningRate = 1.0;		// TODO: make this a member variable that starts at 0.1 and decreases over time
-	mOutputGradients = mOutputGradients->mul(dLearningRate);
+	mOutputGradients->mul(dLearningRate);
 
 	// calculate hidden-output deltas
-	Matrix* mHidden_T = m_mHidden->transpose();
-	Matrix* mWeightsHO_deltas = mOutputGradients->dot(*mHidden_T);
+	Matrix* mHidden_T = Matrix::transpose(*m_mHidden);
+	Matrix* mWeightsHO_deltas = Matrix::dot(*mOutputGradients, *mHidden_T);
 
 	// adjust hidden-output weights and biases
-	m_mWeightsHO = m_mWeightsHO->add(*mWeightsHO_deltas);
+	m_mWeightsHO->add(*mWeightsHO_deltas);
 
 	// apply hidden->output biases
-	m_mBiasO = m_mBiasO->add(*mOutputGradients);
+	m_mBiasO->add(*mOutputGradients);
 
 	// calculate hidden->output deltas/errors
-	Matrix* mWeightsHO_T = m_mWeightsHO->transpose();
-	Matrix* mHiddenErrors = mWeightsHO_T->dot(*mOutputErrors);
+	Matrix* mWeightsHO_T = Matrix::transpose(*m_mWeightsHO);
+	Matrix* mHiddenErrors = Matrix::dot(*mWeightsHO_T, *mOutputErrors);
 
 	// calculate input->hidden gradients via gradient descent
 	Matrix* mHiddenGradients = m_mHidden->map(m_fnSigmoidDerivative);
-	mHiddenGradients = mHiddenGradients->mul(*mHiddenErrors);
-	mHiddenGradients = mHiddenGradients->mul(dLearningRate);
+	mHiddenGradients->mul(*mHiddenErrors);
+	mHiddenGradients->mul(dLearningRate);
 
 	// calculate input->hidden deltas
-	Matrix *mInput_T = m_mInput->transpose();
-	Matrix *mWeightsIH_deltas = mHiddenGradients->dot(*mInput_T);
+	Matrix* mInput_T = Matrix::transpose(*m_mInput);
+	Matrix* mWeightsIH_deltas = Matrix::dot(*mHiddenGradients, *mInput_T);
 
 	// adjust input->hidden weights and biases
-	m_mWeightsIH = m_mWeightsIH->add(*mWeightsIH_deltas);
+	m_mWeightsIH->add(*mWeightsIH_deltas);
 
 	// apply input->hidden biases
-	m_mBiasH = m_mBiasH->add(*mHiddenGradients);
-
+	m_mBiasH->add(*mHiddenGradients);
 }
 
 NNJson NN::toJson()
@@ -192,13 +192,7 @@ void NN::mutate(double dRate)
 	m_mBiasO = m_mBiasO->map(m_fnRandom);
 }
 
-void NN::crossWeights(NN& nn)
+Matrix* NN::getWeightsIH() 
 {
-	//Matrix 
-	// cross weights
-	//m_mWeightsIH = m_mWeightsIH.cross(nn.m_mWeightsIH);
-	//m_mWeightsHO = m_mWeightsHO.cross(nn.m_mWeightsHO);
-	// cross biases
-	//m_mBiasH = m_mBiasH.cross(nn.m_mBiasH);
-	//m_mBiasO = m_mBiasO.cross(nn.m_mBiasO);
+	return m_mWeightsIH;
 }

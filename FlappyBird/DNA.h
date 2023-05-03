@@ -41,7 +41,7 @@ public:
 	~DNA();
 
 	Sonar::Bird* getBird() { return m_pBird; }
-	void setBird(Sonar::Bird* bird) { m_pBird = bird; }
+	void setBird(Sonar::Bird* bird) { delete m_pBird; m_pBird = bird; }
 
 	void getGuess(double* dInputs, int iInputCount);
 
@@ -65,7 +65,7 @@ public:
 	void DebugReport();
 
 	void setNN(NN* nn) { m_pNn = nn; }
-	NN* getNN() { return m_pNn; }
+	NN* getNN(); // { return m_pNn; }
 
 private:
 	void setBird(Sonar::Bird bird) { m_pBird = &bird; }

@@ -16,29 +16,48 @@ namespace Sonar
 	GameState::GameState(GameDataRef data) : _data(data)
 	{
 		m_pAIController = new AIController();
-		m_pAIController->setGameState(this);
+		//m_pAIController->setGameState(this);
+	}
+
+	GameState::~GameState()
+	{
+		delete pipe;
+		delete land;
+
+		delete bird;
+		for (auto& bird : vecBirds)
+		{
+			delete bird;
+			bird = nullptr;
+		}
+		vecBirds.clear();
+
+		delete m_pAIController;
+
+		delete flash;
+		delete hud;
 	}
 
 	void GameState::Init()
 	{
-		if (!_hitSoundBuffer.loadFromFile(HIT_SOUND_FILEPATH))
-		{
-			std::cout << "Error Loading Hit Sound Effect" << std::endl;
-		}
+		//if (!_hitSoundBuffer.loadFromFile(HIT_SOUND_FILEPATH))
+		//{
+		//	std::cout << "Error Loading Hit Sound Effect" << std::endl;
+		//}
 
-		if (!_wingSoundBuffer.loadFromFile(WING_SOUND_FILEPATH))
-		{
-			std::cout << "Error Loading Wing Sound Effect" << std::endl;
-		}
+		//if (!_wingSoundBuffer.loadFromFile(WING_SOUND_FILEPATH))
+		//{
+		//	std::cout << "Error Loading Wing Sound Effect" << std::endl;
+		//}
 
-		if (!_pointSoundBuffer.loadFromFile(POINT_SOUND_FILEPATH))
-		{
-			std::cout << "Error Loading Point Sound Effect" << std::endl;
-		}
+		//if (!_pointSoundBuffer.loadFromFile(POINT_SOUND_FILEPATH))
+		//{
+		//	std::cout << "Error Loading Point Sound Effect" << std::endl;
+		//}
 
-		_hitSound.setBuffer(_hitSoundBuffer);
+		/*_hitSound.setBuffer(_hitSoundBuffer);
 		_wingSound.setBuffer(_wingSoundBuffer);
-		_pointSound.setBuffer(_pointSoundBuffer);
+		_pointSound.setBuffer(_pointSoundBuffer);*/
 
 		this->_data->assets.LoadTexture("Game Background", GAME_BACKGROUND_FILEPATH);
 		this->_data->assets.LoadTexture("Pipe Up", PIPE_UP_FILEPATH);
@@ -76,7 +95,7 @@ namespace Sonar
 			{
 				_gameState = GameStates::ePlaying;
 
-				m_pAIController->handleInput();
+				m_pAIController->handleInput(this);
 
 				//if (m_pAIController->shouldFlap())
 				//{
@@ -114,12 +133,12 @@ namespace Sonar
 
 	void GameState::Update(float dt)
 	{
-		std::vector<Bird*> vecBirds = m_pAIController->getBirds();
+		std::vector<DNA*> vecBirdDna = m_pAIController->getDna();
 		
 		if (GameStates::eGameOver != _gameState)
 		{
-			for (Bird* bird : vecBirds)
-				bird->Animate(dt);
+			for (DNA* birdDna : vecBirdDna)
+				birdDna->getBird()->Animate(dt);
 
 			land->MoveLand(dt);
 		}
@@ -140,17 +159,13 @@ namespace Sonar
 				clock.restart();
 			}
 
-			m_pAIController->update(dt);
-			/*for (Bird* bird : vecBirds)
-				bird->Update(dt);*/
-
-			//std::vector<Bird*> vecBirds = m_pAIController->getBirds();
-			std::vector<DNA*> vecBirdBrains = m_pAIController->getDna();
+			for (DNA* birdDna : vecBirdDna)
+				birdDna->update(dt);
 
 			std::vector<sf::Sprite> landSprites = land->GetSprites();
 			std::vector<sf::Sprite> pipeSprites = pipe->GetSprites();
 
-			for (DNA* birdDna : vecBirdBrains)
+			for (DNA* birdDna : vecBirdDna)
 			{
 				for (unsigned int i = 0; i < landSprites.size(); i++)
 				{
@@ -195,7 +210,7 @@ namespace Sonar
 				for (unsigned int i = 0; i < scoringSprites.size(); i++)
 				{
 					bool hasScored = false;
-					for (DNA* birdDna : vecBirdBrains)
+					for (DNA* birdDna : vecBirdDna)
 					{
 						if (hasScored)
 						{
@@ -204,7 +219,7 @@ namespace Sonar
 						}
 
 						if (collision.CheckSpriteCollision(
-							bird->GetSprite(),
+							birdDna->getBird()->GetSprite(),
 							0.625f, 
 							scoringSprites.at(i),
 							1.0f,
@@ -235,7 +250,8 @@ namespace Sonar
 				m_pAIController->gameOver(dt);
 				
 				//this->_data->machine.AddState(StateRef(new GameOverState(_data, _score)), true);
-				this->_data->machine.AddState(StateRef(new GameState(_data)), true);
+				//this->_data->machine.AddState(StateRef(new GameState(_data)), true);
+				this->_data->machine.AddState(StateRef(this), false);
 			}
 		}
 	}
@@ -253,7 +269,7 @@ namespace Sonar
 		if (GameStates::eGameOver != _gameState)
 			m_pAIController->draw();
 
-		flash->Draw();
+		//flash->Draw();
 
 		hud->Draw();
 

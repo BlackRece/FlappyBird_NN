@@ -77,8 +77,8 @@ public:
 	void draw() { m_pGAM->draw(); }
 	void update(float dt) { m_pGAM->update(dt); }
 
-	void setGameState(GameState* pGameState) { m_pGameState = pGameState; }
-	void handleInput();
+	//void setGameState(GameState* pGameState) { m_pGameState = pGameState; }
+	void handleInput(GameState* m_pGameState);
 	void gameOver(float dt);
 	
 	bool shouldFlap(); // note when this is called, it resets the flap state
@@ -89,7 +89,7 @@ private:
 	float distanceToNearestPipes(Pipe* pipe, Bird* bird);
 	float distanceToCentreOfPipeGap(Pipe* pipe, Bird* bird);
 
-	GameState*	m_pGameState;
+	//GameState*	m_pGameState;
 	GAM*		m_pGAM;
 	bool		m_bShouldFlap;
 

@@ -49,7 +49,7 @@ public:
 	// genetic algorithm functions
 	NN* clone() const { return new NN(*this); }
 	void mutate(double dRate);
-	Matrix* getWeightsIH() { return m_mWeightsIH; }
+	Matrix* getWeightsIH();// { return m_mWeightsIH; }
 	Matrix* getWeightsHO() { return m_mWeightsHO; }
 	Matrix* getBiasH() { return m_mBiasH; }
 	Matrix* getBiasO() { return m_mBiasO; }
@@ -66,8 +66,6 @@ public:
 	std::vector<Matrix*> getBiases() { return { m_mBiasH, m_mBiasO }; }
 	void setBiases(std::vector<Matrix*> vBiases) 
 		{ m_mBiasH = vBiases[0]; m_mBiasO = vBiases[1]; }
-
-	void crossWeights(NN& nn);
 
 private:
 	double m_dLearningRate;

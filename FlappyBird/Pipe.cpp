@@ -15,6 +15,11 @@ namespace Sonar
 	{
 		sf::Sprite sprite(this->_data->assets.GetTexture("Pipe Up"));
 
+		float yPos = (float)this->_data->window.getSize().y;	// 1024
+		float boundsHeight = sprite.getLocalBounds().height;	// 368
+		float landHeight = 261.0f;								// 261
+		float pipeSpawnYOffset = _pipeSpawnYOffset;				// = rand() % (_landHeight + 1);
+
 		sprite.setPosition((float)this->_data->window.getSize().x, (float)this->_data->window.getSize().y - sprite.getLocalBounds().height - _pipeSpawnYOffset);
 
 		pipeSprites.push_back(sprite);
@@ -58,7 +63,7 @@ namespace Sonar
 			}
 			else
 			{
-				sf::Vector2f position = pipeSprites.at(i).getPosition();
+				//sf::Vector2f position = pipeSprites.at(i).getPosition();
 				float movement = PIPE_MOVEMENT_SPEED * dt;
 
 				pipeSprites.at(i).move(-movement, 0);
@@ -73,7 +78,7 @@ namespace Sonar
 			}
 			else
 			{
-				sf::Vector2f position = scoringPipes.at(i).getPosition();
+				//sf::Vector2f position = scoringPipes.at(i).getPosition();
 				float movement = PIPE_MOVEMENT_SPEED * dt;
 
 				scoringPipes.at(i).move(-movement, 0);

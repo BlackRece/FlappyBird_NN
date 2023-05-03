@@ -1,4 +1,2 @@
-﻿  GameState.cpp
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\GameState.cpp(12,1): warning C4005: 'BIRD_COUNT': macro redefinition
-D:\GitHub\AI Course\FlappyBird_NN\FlappyBird\AIController.h(8,1): message : see previous definition of 'BIRD_COUNT'
+﻿  AIController.cpp
   FlappyBird.vcxproj -> D:\GitHub\AI Course\FlappyBird_NN\Debug\FlappyBird.exe
