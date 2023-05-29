@@ -55,13 +55,13 @@ namespace Sonar
 
 		int _score;
 
-		sf::SoundBuffer _hitSoundBuffer;
-		sf::SoundBuffer _wingSoundBuffer;
-		sf::SoundBuffer _pointSoundBuffer;
+		//sf::SoundBuffer _hitSoundBuffer;
+		//sf::SoundBuffer _wingSoundBuffer;
+		//sf::SoundBuffer _pointSoundBuffer;
 
-		sf::Sound _hitSound;
-		sf::Sound _wingSound;
-		sf::Sound _pointSound;
+		//sf::Sound _hitSound;
+		//sf::Sound _wingSound;
+		//sf::Sound _pointSound;
 
 		AIController* m_pAIController;
 	};

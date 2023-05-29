@@ -19,7 +19,14 @@ namespace Sonar
 	{
 		if (this->_isRemoving && !this->_states.empty())
 		{
+			auto pTop = this->_states.top();
+
 			this->_states.pop();
+			if (pTop != nullptr)
+			{
+				delete pTop;
+				pTop = nullptr;
+			}
 
 			if (!this->_states.empty())
 			{

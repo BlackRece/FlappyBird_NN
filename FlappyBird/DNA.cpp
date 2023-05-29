@@ -42,13 +42,12 @@ void DNA::onHit(Hit eHit)
 	if(m_bIsDead)
 		return;
 
-	switch (eHit)
+	if(eHit == Hit::Gap)
 	{
-		case Hit::Gap:		m_iScore += 1000; return;
-		case Hit::Pipe:		m_iScore -= 10; break;
-		case Hit::Floor:	m_iScore -= 100; break;
+		m_iScore++;
+		return;
 	}
-
+	
 	m_bIsDead = true;
 }
 

@@ -7,6 +7,13 @@
 
 #define BIRD_COUNT 100
 
+#define ERROR_DISTANCE 999999
+
+#define INPUT_COUNT 4
+#define HIDDEN_COUNT 6
+#define OUTPUT_COUNT 1
+
+
 using namespace Sonar;
 
 struct DnaGene
@@ -31,12 +38,12 @@ struct DnaGene
 
 struct TrainingData
 {
-	double dInputs[5];
-	double dOutputs[1];
+	double dInputs[INPUT_COUNT];
+	double dOutputs[OUTPUT_COUNT];
 
-	TrainingData(double dInput[5])
+	TrainingData(double dInput[INPUT_COUNT])
 	{
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < INPUT_COUNT; i++)
 			dInputs[i] = dInput[i];
 	
 		if (dInputs[3] < 20 && dInputs[2] < 20)

@@ -78,8 +78,13 @@ double* NN::feedForward(const double dInputs[], const int iInputCount)
 	return m_mOutput->toArray();
 }
 
-void NN::trainFeedForward(const double dInputs[], const int iInputCount, const double dTargets[], const int iTargetCount)
+void NN::trainFeedForward(
+	const double dInputs[],
+	const int iInputCount, 
+	const double dTargets[],
+	const int iTargetCount)
 {
+	// backpropagation 
 	double* rawOutputs = feedForward(dInputs, iInputCount);
 
 	Matrix *mOutputs{}, *mTargets{};
@@ -95,9 +100,7 @@ void NN::trainFeedForward(const double dInputs[], const int iInputCount, const d
 	// calculate hidden-output gradients via gradient descent
 	Matrix* mOutputGradients = mOutputs->map(m_fnSigmoidDerivative);
 	mOutputGradients->mul(*mOutputErrors);
-
-	double dLearningRate = 1.0;		// TODO: make this a member variable that starts at 0.1 and decreases over time
-	mOutputGradients->mul(dLearningRate);
+	mOutputGradients->mul(m_dLearningRate);
 
 	// calculate hidden-output deltas
 	Matrix* mHidden_T = Matrix::transpose(*m_mHidden);
@@ -116,7 +119,7 @@ void NN::trainFeedForward(const double dInputs[], const int iInputCount, const d
 	// calculate input->hidden gradients via gradient descent
 	Matrix* mHiddenGradients = m_mHidden->map(m_fnSigmoidDerivative);
 	mHiddenGradients->mul(*mHiddenErrors);
-	mHiddenGradients->mul(dLearningRate);
+	mHiddenGradients->mul(m_dLearningRate);
 
 	// calculate input->hidden deltas
 	Matrix* mInput_T = Matrix::transpose(*m_mInput);

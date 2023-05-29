@@ -4,11 +4,6 @@
 #include <vector>
 
 using namespace std;
-#define ERROR_DISTANCE 9999
-
-#define INPUT_COUNT 5
-#define HIDDEN_COUNT 6
-#define OUTPUT_COUNT 1
 
 AIController::AIController()
 {
@@ -17,8 +12,7 @@ AIController::AIController()
 	// 1. distance to floor
 	// 2. distance to nearest pipe
 	// 3. distance to centre of gap
-	// 4. bird y position
-	// 5. bird y velocity
+	// 4. bird y velocity
 	// 
 	// hidden nodes
 	// 5 minimum
@@ -51,7 +45,6 @@ std::vector<Bird*> AIController::getBirds()
 }
 
 // update - the AI method which determines whether the bird should flap or not. 
-// set m_bShouldFlap to true or false.
 void AIController::handleInput(GameState* pGameState)
 {
 	if (pGameState == nullptr)
@@ -60,24 +53,11 @@ void AIController::handleInput(GameState* pGameState)
 	Pipe* pipe = pGameState->GetPipeContainer();
 	Land* land = pGameState->GetLandContainer();
 	
-	/*int brainCount = 0;
-	auto chromos = m_pGAM->getChromos();
-	for (int i = 0; i < chromos.size(); i++)
-	{
-		auto tmpNN = chromos[i]->getNN();
-		auto tmpMatrix = tmpNN->getWeightsIH();
-
-		if(tmpMatrix->getRowsCount() != HIDDEN_COUNT)
-			brainCount++;
-	}*/
-
 	for (DNA* birdBrain : m_pGAM->getChromos())
 	{
-
 		Bird* bird = birdBrain->getBird();
 
 		float fDistanceToFloor = distanceToFloor(land, bird);
-	
 		float fDistanceToNearestPipe = distanceToNearestPipes(pipe, bird);
 		float fDistanceToCentreOfGap = ERROR_DISTANCE;
 
@@ -89,16 +69,12 @@ void AIController::handleInput(GameState* pGameState)
 			(double)fDistanceToFloor, 
 			(double)fDistanceToNearestPipe, 
 			(double)fDistanceToCentreOfGap, 
-			(double)bird->GetSprite().getPosition().y,
 			(double)bird->getVelocity()
 		};
-
 		birdBrain->getGuess(inputs, INPUT_COUNT);
 
 		m_vecTrainingData.push_back(TrainingData(inputs));
 	}
-
-	return;
 }
 
 //void AIController::update(float dt)
@@ -123,25 +99,25 @@ void AIController::gameOver(float dt)
 {
 	DNA* bestBird = m_pGAM->getBirdToTrain();// ->copy();
 	
-	NN* birdBrain = bestBird->getNN();
-	if (birdBrain != nullptr)
-	{
-		delete m_pBrain;
-		m_pBrain = birdBrain;
-	}
-	
-	if (m_pBrain != nullptr)
-	{
-		for (TrainingData data : m_vecTrainingData)
-		{
-			m_pBrain->trainFeedForward(
-				data.dInputs, INPUT_COUNT,
-				data.dOutputs, OUTPUT_COUNT
-			);
-		}
-	}
+	//NN* birdBrain = bestBird->getNN();
+	//if (birdBrain != nullptr)
+	//{
+	//	delete m_pBrain;
+	//	m_pBrain = birdBrain;
+	//}
+	//
+	//if (m_pBrain != nullptr)
+	//{
+	//	for (TrainingData data : m_vecTrainingData)
+	//	{
+	//		m_pBrain->trainFeedForward(
+	//			data.dInputs, INPUT_COUNT,
+	//			data.dOutputs, OUTPUT_COUNT
+	//		);
+	//	}
+	//}
 
-	bestBird->setNN(m_pBrain);
+	//bestBird->setNN(m_pBrain);
 
 	m_pGAM->nextGeneration(bestBird);
 
@@ -163,7 +139,7 @@ float AIController::distanceToFloor(Land* land, Bird* bird)
 
 float AIController::distanceToNearestPipes(Pipe* pipe, Bird* bird)
 {
-	float nearest1 = 999999;
+	float nearest1 = ERROR_DISTANCE;
 	sf::Sprite* nearestSprite1 = nullptr;
 
 	// get nearest pipes
@@ -189,8 +165,8 @@ float AIController::distanceToNearestPipes(Pipe* pipe, Bird* bird)
 
 float AIController::distanceToCentreOfPipeGap(Pipe* pipe, Bird* bird)
 {
-	float nearest1 = 999999;
-	float nearest2 = 999999;
+	float nearest1 = ERROR_DISTANCE;
+	float nearest2 = ERROR_DISTANCE;
 	sf::Sprite* nearestSprite1 = nullptr;
 	sf::Sprite* nearestSprite2 = nullptr;
 

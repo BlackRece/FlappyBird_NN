@@ -40,24 +40,26 @@ namespace Sonar
 
 	void GameState::Init()
 	{
-		//if (!_hitSoundBuffer.loadFromFile(HIT_SOUND_FILEPATH))
-		//{
-		//	std::cout << "Error Loading Hit Sound Effect" << std::endl;
-		//}
+		/*
+		if (!_hitSoundBuffer.loadFromFile(HIT_SOUND_FILEPATH))
+		{
+			std::cout << "Error Loading Hit Sound Effect" << std::endl;
+		}
 
-		//if (!_wingSoundBuffer.loadFromFile(WING_SOUND_FILEPATH))
-		//{
-		//	std::cout << "Error Loading Wing Sound Effect" << std::endl;
-		//}
+		if (!_wingSoundBuffer.loadFromFile(WING_SOUND_FILEPATH))
+		{
+			std::cout << "Error Loading Wing Sound Effect" << std::endl;
+		}
 
-		//if (!_pointSoundBuffer.loadFromFile(POINT_SOUND_FILEPATH))
-		//{
-		//	std::cout << "Error Loading Point Sound Effect" << std::endl;
-		//}
+		if (!_pointSoundBuffer.loadFromFile(POINT_SOUND_FILEPATH))
+		{
+			std::cout << "Error Loading Point Sound Effect" << std::endl;
+		}
 
-		/*_hitSound.setBuffer(_hitSoundBuffer);
+		_hitSound.setBuffer(_hitSoundBuffer);
 		_wingSound.setBuffer(_wingSoundBuffer);
-		_pointSound.setBuffer(_pointSoundBuffer);*/
+		_pointSound.setBuffer(_pointSoundBuffer);
+		*/
 
 		this->_data->assets.LoadTexture("Game Background", GAME_BACKGROUND_FILEPATH);
 		this->_data->assets.LoadTexture("Pipe Up", PIPE_UP_FILEPATH);
@@ -72,7 +74,7 @@ namespace Sonar
 
 		pipe = new Pipe(_data);
 		land = new Land(_data);
-		bird = new Bird(_data);
+		//bird = new Bird(_data);
 
 		m_pAIController->initBirds(_data);
 		
@@ -123,9 +125,9 @@ namespace Sonar
 				if (GameStates::eGameOver != _gameState)
 				{
 					_gameState = GameStates::ePlaying;
-					bird->Tap();
+					//bird->Tap();
 
-					_wingSound.play();
+					//_wingSound.play();
 				}
 			}
 		}

@@ -7,7 +7,8 @@
 
 namespace Sonar
 {
-	typedef std::unique_ptr<State> StateRef;
+	//typedef std::unique_ptr<State> StateRef;
+	typedef State* StateRef;
 
 	class StateMachine
 	{

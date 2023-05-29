@@ -155,7 +155,6 @@ DNA* GAM::popBestDNA(std::vector<DNA*>& vecSource)
 
 std::vector<DNA*> GAM::selection_rank()
 {
-	// no. of best chromosomes to select
 	std::vector<DNA*> vecChromoCopy = m_vecChromos;
 	std::vector<DNA*> vecBestChromos;
 
