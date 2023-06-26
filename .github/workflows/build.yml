@@ -21,6 +21,7 @@ jobs:
 
     - name: Build project
       run: |
+        $env:Path += ';C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin'
         msbuild FlappyBird.vcxproj /p:Configuration=Debug /p:Platform=Win32
 
     - name: Upload artifact
