@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1.0.1
+
+    - name: Build project
+      run: |
+        msbuild FlappyBird.vcxproj /p:Configuration=Debug /p:Platform=Win32
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: FlappyBird-exe
+        path: Debug/FlappyBird.exe
